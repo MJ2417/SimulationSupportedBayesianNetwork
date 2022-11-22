@@ -1,0 +1,193 @@
+import random
+import rpy2.robjects as robjects
+import networkx as nx
+from scipy.stats import truncexpon
+from networkx.drawing.nx_agraph import to_agraph
+
+
+from rpy2.robjects.packages import STAP
+from scipy.sparse import csr_matrix
+import scipy
+from numpy import random
+from numpy import savetxt
+from pandas.core.common import flatten
+import rpy2.robjects as ro
+import copy
+import networkx as nx
+import scipy as sp
+from random import seed
+from osgeo import ogr
+import osmnx as ox
+import momepy
+import shapefile
+import geopandas
+import geojson
+import fiona
+from shapely.geometry import shape, LineString, Point
+from shapely.geometry import Polygon
+from networkx.readwrite import json_graph
+from mpl_toolkits.basemap import Basemap as Basemap
+from difflib import SequenceMatcher
+import re
+# from Markov_chain_new import MarkovChain
+# from KDA import KDA
+import itertools
+import more_itertools
+from scipy.interpolate import interp1d
+from discreteMarkovChain import markovChain
+import datetime
+from Markov_chain_new import MarkovChain
+from scipy.stats import beta
+from itertools import product, combinations, combinations_with_replacement
+
+
+#network
+
+import random
+import rpy2.robjects as robjects
+import networkx as nx
+from scipy.stats import truncexpon
+from networkx.drawing.nx_agraph import to_agraph
+from rpy2.robjects.packages import STAP
+from scipy.sparse import csr_matrix
+import scipy
+from numpy import random
+from numpy import savetxt
+from pandas.core.common import flatten
+import rpy2.robjects as ro
+#ro.conversion.py2rpy=numpy2ri
+
+from osgeo import ogr
+import osmnx as ox
+import momepy
+import shapefile
+import geopandas
+import geojson
+import fiona
+from shapely.geometry import shape, LineString, Point
+from shapely.geometry import Polygon
+from networkx.readwrite import json_graph
+from mpl_toolkits.basemap import Basemap as Basemap
+from difflib import SequenceMatcher
+import re
+# from Markov_chain_new import MarkovChain
+# from KDA import KDA
+import itertools
+import more_itertools
+from scipy.interpolate import interp1d
+from discreteMarkovChain import markovChain
+import datetime
+from Markov_chain_new import MarkovChain
+
+
+#subnet
+from random import seed
+from osgeo import ogr
+import osmnx as ox
+import momepy
+import shapefile
+import geopandas
+import geojson
+import fiona
+from shapely.geometry import shape, LineString, Point
+from shapely.geometry import Polygon
+from networkx.readwrite import json_graph
+from mpl_toolkits.basemap import Basemap as Basemap
+from difflib import SequenceMatcher
+import re
+#from Markov_chain_new import MarkovChain
+#from KDA import KDA
+import itertools
+import more_itertools
+from scipy.interpolate import interp1d
+from discreteMarkovChain import markovChain
+
+#system
+from random import seed
+from osgeo import ogr
+import osmnx as ox
+import momepy
+import shapefile
+import geopandas
+import geojson
+import fiona
+from shapely.geometry import shape, LineString, Point
+from shapely.geometry import Polygon
+from networkx.readwrite import json_graph
+from mpl_toolkits.basemap import Basemap as Basemap
+from difflib import SequenceMatcher
+import re
+#from Markov_chain_new import MarkovChain
+#from KDA import KDA
+import itertools
+#Discretization
+from random import seed
+from osgeo import ogr
+import osmnx as ox
+import momepy
+import shapefile
+import geopandas
+import geojson
+import fiona
+from shapely.geometry import shape, LineString, Point
+from shapely.geometry import Polygon
+from networkx.readwrite import json_graph
+from mpl_toolkits.basemap import Basemap as Basemap
+from difflib import SequenceMatcher
+import re
+#from Markov_chain_new import MarkovChain
+#from KDA import KDA
+import itertools
+import more_itertools
+from scipy.interpolate import interp1d
+from discreteMarkovChain import markovChain
+import datetime
+from Markov_chain_new import MarkovChain
+from scipy.stats import beta
+from itertools import product, combinations, combinations_with_replacement
+#ConditionalTables
+from random import seed
+from osgeo import ogr
+import osmnx as ox
+import momepy
+import shapefile
+import geopandas
+import geojson
+import fiona
+from shapely.geometry import shape, LineString, Point
+from shapely.geometry import Polygon
+from networkx.readwrite import json_graph
+from mpl_toolkits.basemap import Basemap as Basemap
+from difflib import SequenceMatcher
+import re
+#from Markov_chain_new import MarkovChain
+#from KDA import KDA
+import itertools
+import more_itertools
+from scipy.interpolate import interp1d
+from discreteMarkovChain import markovChain
+import datetime
+from Markov_chain_new import MarkovChain
+from scipy.stats import beta
+#Roads
+from random import seed
+from osgeo import ogr
+import osmnx as ox
+import momepy
+import shapefile
+import geopandas
+import geojson
+import fiona
+from shapely.geometry import shape, LineString, Point
+from shapely.geometry import Polygon
+from networkx.readwrite import json_graph
+from mpl_toolkits.basemap import Basemap as Basemap
+from difflib import SequenceMatcher
+import re
+#from Markov_chain_new import MarkovChain
+#from KDA import KDA
+import itertools
+#Roads
+from discreteMarkovChain import markovChain
+import datetime
+from Markov_chain_new import MarkovChain
