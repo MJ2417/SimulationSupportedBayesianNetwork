@@ -80,7 +80,7 @@ class ConditionalTables():
         return CondiProbTableLevels21
 
     ################### ConditionalProbTabLveles10Generate function
-    def ConditionalProbTabLveles10GenerateJuly2022(self, CondiProbTableLevels10,DataFrameForDisLay1Input,DataFrameForDisLay0out,nDiscretise,OverallSample,nEdges,AllEdges):
+    def ConditionalProbTabLveles10GenerateJuly2022(self, CondiProbTableLevels10,DataFrameForDisLay1Input,DataFrameForDisLay0out,nDiscretise,OverallSample,nEdges,AllEdges, Subnet):
 
         for variableO in range(0, 2, 1):
                 MeasureToWrite = []

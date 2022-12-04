@@ -27,27 +27,8 @@ from Subnetwork.subnet import *
 from System.system import *
 from Discretization import *
 from ConditionalTables import *
+from CaseStudyNetwork.Input_parameters import *
 
-resultsPath = 'C:\\Users\\Mohsen\\Documents\\PythonProjects\\Opac\\OutputResults\\'
-RM = [[0.2, 0.5], [0.15, 0.4]]
-Q10 = ([[-1 / 30, 1 / 30, 0, 0], [0, -0.25, 0.05, RM[0][0]], [0.1, 0.2, -0.3, 0], [1, 0, 0, -1]])
-Q11 = ([[-1 / 30, 1 / 30, 0, 0], [0, -0.2, 0.05, RM[1][0]], [0.1, 0.2, -0.3, 0], [1, 0, 0, -1]])
-Q20 = ([[-1 / 30, 1 / 30, 0, 0], [0, -0.55, 0.05, RM[0][1]], [0.1, 0.2, -0.3, 0], [1, 0, 0, -1]])
-Q21 = ([[-1 / 30, 1 / 30, 0, 0], [0, -0.45, 0.05, RM[1][1]], [0.1, 0.2, -0.3, 0], [1, 0, 0, -1]])
-Simulatingtime = 1200
-warm_up = 500
-RehabFullCost = 200
-MaintenanceCost = 10
-AvailCoeff = [1.0, 0.8, 0.0, 0.6]
-
-NumSimRun = 100
-n_sample = 50  # for building density
-OverallSample = 60  # for generation
-PlotDist = 0
-MeasureList = ['Avail', 'TotalCost']
-MeasureList22 = ['TravelTime', 'TotalCost']
-# Subnet=4
-nDiscretise = 4
 network_instance = Network()
 roads_instance = Roads()
 subnetwork_instance = Subnetworks()
@@ -56,134 +37,177 @@ discretization_instance = Discretization()
 conditional_tables_instance = ConditionalTables()
 for Subnet in range(1, 5, 1):
 
-    [EdgeAll, EdgeListWithBridges, EdgeListWithBridgesShortDis, EdgesWithTraffic, EdgesWithTrafficProb,
+    [EdgeAll, edge_with_bridges_list, EdgeListWithBridgesShortDis, EdgesWithTraffic, EdgesWithTrafficProb,
      EdgesWithTrafficOtherTime, BridgeRoadMat, TurningMat, TurningMatMod, TravelingTimeEdge,
      EdgeNumWithBridges] = network_instance.CharacterizeSubnet(Subnet)
-    # print(TurningMatMod)
-    pdAlg1BridgeLevel = pd.DataFrame(
+    df_algorithm1_bridge_level = pd.DataFrame(
         columns=['subnet', 'sim_run', 'BridgeID', 'ListMaintenanceRates', 'ListMaintenanceRatesCoded', 'Edge', 'Avail',
                  'TotalCost'])
     if Subnet == 1:
-        pdAlg1BridgeLevelConCat = pd.DataFrame({}, columns=pdAlg1BridgeLevel.columns.values, index=None)
-    pdAlg1BridgeLevel = roads_instance.EdgeSimulationJuly2022(pdAlg1BridgeLevel, BridgeRoadMat, EdgeListWithBridges,
-                                                              Subnet, Q10, Q11, Q20, Q21, RM, NumSimRun,
-                                                              Simulatingtime, warm_up, RehabFullCost, MaintenanceCost,
-                                                              AvailCoeff)
-    # print(pdAlg1BridgeLevel[['ListMaintenanceRates','ListMaintenanceRatesCoded']])
-    pdAlg1BridgeLevelConCat = pd.concat([pdAlg1BridgeLevelConCat, pdAlg1BridgeLevel])
+        df_algorithm1_bridge_level_concatenated = pd.DataFrame({}, columns=df_algorithm1_bridge_level.columns.values,
+                                                               index=None)
+    df_algorithm1_bridge_level = roads_instance.edge_simulation_july_2022(df_algorithm1_bridge_level, BridgeRoadMat,
+                                                                          edge_with_bridges_list,
+                                                                          Subnet, Q10, Q11, Q20, Q21, RM, NumSimRun,
+                                                                          Simulatingtime, warm_up, RehabFullCost,
+                                                                          MaintenanceCost,
+                                                                          AvailCoeff)
+    df_algorithm1_bridge_level_concatenated = pd.concat([df_algorithm1_bridge_level_concatenated,
+                                                         df_algorithm1_bridge_level])
     if Subnet == 4:
-        pdAlg1BridgeLevelConCat.to_csv(os.path.join(resultsPath + "pdAlg1BridgeLevelConCat.csv"))
-    # print(BridgeRoadMat)
-    pdAlg2InputSample = pd.DataFrame(columns=['subnet', 'sample_run', 'Edge', 'Avail', 'TotalCost'])
+        df_algorithm1_bridge_level_concatenated.to_csv(os.path.join(resultsPath +
+                                                                    "df_algorithm1_bridge_level_concatenated.csv"))
+    df_algorithm2_input_sample = pd.DataFrame(columns=['subnet', 'sample_run', 'Edge', 'Avail', 'TotalCost'])
     if Subnet == 1:
-        pdAlg2InputSampleConCat = pd.DataFrame({}, columns=pdAlg2InputSample.columns.values, index=None)
-    pdAlg2InputSample = roads_instance.Sampling4InputAlg2(resultsPath, pdAlg1BridgeLevel, pdAlg2InputSample,
-                                                          MeasureList, EdgeListWithBridges, EdgeNumWithBridges, Subnet,
-                                                          OverallSample, PlotDist, n_sample)
-    pdAlg2InputSampleConCat = pd.concat([pdAlg2InputSampleConCat, pdAlg2InputSample])
+        df_algorithm2_input_sample_concatenated = pd.DataFrame({}, columns=df_algorithm2_input_sample.columns.values,
+                                                               index=None)
+    df_algorithm2_input_sample = roads_instance.sampling_inputs_algorithm2(resultsPath, df_algorithm1_bridge_level,
+                                                                           df_algorithm2_input_sample,
+                                                                           measure_list, edge_with_bridges_list,
+                                                                           EdgeNumWithBridges, Subnet,
+                                                                           OverallSample, PlotDist, n_sample)
+    df_algorithm2_input_sample_concatenated = pd.concat([df_algorithm2_input_sample_concatenated,
+                                                         df_algorithm2_input_sample])
     if Subnet == 4:
-        pdAlg2InputSampleConCat.to_csv(os.path.join(resultsPath + "pdAlg2InputSampleConCat.csv"))
-    # print(pdAlg2InputSample)
+        df_algorithm2_input_sample_concatenated.to_csv(os.path.join(resultsPath +
+                                                                    "df_algorithm2_input_sample_concatenated.csv"))
 
     # Inputs of third algorithm
-    # IncomMat1 = ([[0, 0.2, 0.4, 0.4], [0.15, 0.5, 0.15, 0.2], [0.2, 0.3, 0.5, 0], [0.23, 0.1, 0, .67]])
-    # IncomMat2 = ([[0, 0.2, 0.4, 0.4], [0.15, 0.5, 0.15, 0.2], [0.1, 0.15, 0.75, 0], [0.23, 0.1, 0, .67]])
-    # print(IncomMat1[0][3])
-    pdAlg2output = pd.DataFrame(columns=['subnetwork', 'sample_run', 'TravelTime', 'TotalCost'])
+    df_algorithm2_output = pd.DataFrame(columns=['subnetwork', 'sample_run', 'TravelTime', 'TotalCost'])
     if Subnet == 1:
-        pdAlg2outputConCat = pd.DataFrame({}, columns=pdAlg2output.columns.values, index=None)
-    pdAlg2output = subnetwork_instance.SimulateAlg2Output(Subnet, EdgeAll, EdgeListWithBridges,
-                                                          EdgeListWithBridgesShortDis, EdgesWithTraffic,
-                                                          EdgesWithTrafficProb, EdgesWithTrafficOtherTime,
-                                                          BridgeRoadMat,
-                                                          TurningMat, TurningMatMod, TravelingTimeEdge,
-                                                          EdgeNumWithBridges,
-                                                          pdAlg2output, pdAlg2InputSample, OverallSample)
-    pdAlg2outputConCat = pd.concat([pdAlg2outputConCat, pdAlg2output])
+        df_algorithm2_output_concatenated = pd.DataFrame({}, columns=df_algorithm2_output.columns.values, index=None)
+    df_algorithm2_output = subnetwork_instance.simulate_algorithm2_output_generation(Subnet, EdgeAll,
+                                                                                     edge_with_bridges_list,
+                                                                                     EdgeListWithBridgesShortDis,
+                                                                                     EdgesWithTraffic,
+                                                                                     EdgesWithTrafficProb,
+                                                                                     EdgesWithTrafficOtherTime,
+                                                                                     BridgeRoadMat,
+                                                                                     TurningMat, TurningMatMod,
+                                                                                     TravelingTimeEdge,
+                                                                                     EdgeNumWithBridges,
+                                                                                     df_algorithm2_output,
+                                                                                     df_algorithm2_input_sample,
+                                                                                     OverallSample)
+    df_algorithm2_output_concatenated = pd.concat([df_algorithm2_output_concatenated, df_algorithm2_output])
     if Subnet == 4:
-        pdAlg2outputConCat.to_csv(os.path.join(resultsPath + "pdAlg2outputConCat.csv"))
+        df_algorithm2_output_concatenated.to_csv(os.path.join(resultsPath + "df_algorithm2_output_concatenated.csv"))
 
-    # IncomMat1,IncomMat2,pdAlg2output,pdAlg2InputSample,OverallSample,aaa,bbb)
+    # discretization
     indexLoop = 0
+    df_algorithm1_bridge_level_for_discretization_concatenated = pd.DataFrame()
+    df_algorithm2_input_sample_for_discretization_concate = pd.DataFrame()
     np.set_printoptions(threshold=sys.maxsize)
-    DataFrameForDisLay0out = pdAlg2output
-    for edgeBri in EdgeListWithBridges:
-        DataFrameForDisLay2out = pdAlg1BridgeLevel[(pdAlg1BridgeLevel['Edge'] == edgeBri)]
-        DataFrameForDisLay1Input = pdAlg2InputSample[(pdAlg2InputSample['Edge'] == edgeBri)]  # layer 1-input
+    df_algorithm2_output_for_discretization = df_algorithm2_output
+    for edge_with_bridge_instance in edge_with_bridges_list:
+        df_algorithm1_bridge_level_for_discretization = df_algorithm1_bridge_level[
+            (df_algorithm1_bridge_level['Edge'] ==
+             edge_with_bridge_instance)]
+        df_algorithm2_input_sample_for_discretization = df_algorithm2_input_sample[
+            (df_algorithm2_input_sample['Edge'] ==
+             edge_with_bridge_instance)]  # layer 1-input
+
         if indexLoop == 0:
-            DataFrameForDisLay2outConCat = pd.DataFrame({}, columns=DataFrameForDisLay2out.columns.values,
-                                                        index=None)  # copy.deepcopy(DataFrameForDisLay2out)
-            DataFrameForDisLay1InputConCat = pd.DataFrame({}, columns=DataFrameForDisLay1Input.columns.values,
-                                                          index=None)  # copy.deepcopy(DataFrameForDisLay1Input)
+            df_algorithm1_bridge_level_for_discretization_concatenated = pd.DataFrame({},
+                                                                                      columns=df_algorithm1_bridge_level_for_discretization.columns.values,
+                                                                                      index=None)  # copy.deepcopy(DataFrameForDisLay2out)
+            df_algorithm2_input_sample_for_discretization_concate = pd.DataFrame({},
+                                                                                 columns=df_algorithm2_input_sample_for_discretization.columns.values,
+                                                                                 index=None)  # copy.deepcopy(DataFrameForDisLay1Input)
         indexLoop += 1
+
         for MeasureId in range(0, 2, 1):
-            Measure = MeasureList[MeasureId]
-            [DataFrameForDisLay2out, DiscLay2outRoad12, binsLay2out] = discretization_instance.DiscretizeDataFrame(
-                DataFrameForDisLay2out, Measure, nDiscretise)
-            DataFrameForDisLay1Input[Measure] = DataFrameForDisLay1Input[Measure].astype(float)
-            [DataFrameForDisLay1Input, DiscLay1InputRoad12] = discretization_instance.DiscretizeDataFrameWithBins(
-                DataFrameForDisLay1Input, Measure, binsLay2out)
-            # print(DataFrameForDisLay2out)
-            DataFrameForDisLay2outConCat = pd.concat([DataFrameForDisLay2outConCat, DataFrameForDisLay2out])
-            DataFrameForDisLay1InputConCat = pd.concat([DataFrameForDisLay1InputConCat, DataFrameForDisLay1Input])
+            Measure = measure_list[MeasureId]
+            [df_algorithm1_bridge_level_for_discretization, DiscLay2outRoad12,
+             binsLay2out] = discretization_instance.discretize_data_frame(
+                df_algorithm1_bridge_level_for_discretization, Measure, n_discretization)
+            df_algorithm2_input_sample_for_discretization[Measure] = df_algorithm2_input_sample_for_discretization[
+                Measure].astype(float)
+            [df_algorithm2_input_sample_for_discretization,
+             df_algorithm2_bins] = discretization_instance.discretize_data_frame_with_bins(
+                df_algorithm2_input_sample_for_discretization, Measure, binsLay2out)
+            df_algorithm1_bridge_level_for_discretization_concatenated = pd.concat(
+                [df_algorithm1_bridge_level_for_discretization_concatenated,
+                 df_algorithm1_bridge_level_for_discretization])
+            df_algorithm2_input_sample_for_discretization_concate = pd.concat(
+                [df_algorithm2_input_sample_for_discretization_concate, df_algorithm2_input_sample_for_discretization])
 
     if Subnet == 1:
-        DataFrameForDisLay0outConCat = pd.DataFrame({}, columns=DataFrameForDisLay0out.columns.values, index=None)
+        df_algorithm2_output_for_discretization_concat = pd.DataFrame({},
+                                                                      columns=df_algorithm2_output_for_discretization.columns.values,
+                                                                      index=None)
     for MeasureId in range(0, 2, 1):
         Measure22 = MeasureList22[MeasureId]
-        [DataFrameForDisLay0out, DiscLay0out, binsLay0out] = discretization_instance.DiscretizeDataFrame(
-            DataFrameForDisLay0out, Measure22, nDiscretise)
-        DataFrameForDisLay0outConCat = pd.concat([DataFrameForDisLay0outConCat, DataFrameForDisLay0out])
+        [df_algorithm2_output_for_discretization, DiscLay0out,
+         binsLay0out] = discretization_instance.discretize_data_frame_algorithm2_and_3(
+            df_algorithm2_output_for_discretization, Measure22, n_discretization)
+    df_algorithm2_output_for_discretization_concat = pd.concat(
+        [df_algorithm2_output_for_discretization_concat, df_algorithm2_output_for_discretization])
     if Subnet == 4:
-        DataFrameForDisLay0outConCat.to_csv(os.path.join(resultsPath + "DataFrameForDisLay0outConCat.csv"))
+        df_algorithm2_output_for_discretization_concat.to_csv(
+            os.path.join(resultsPath + "df_algorithm2_output_for_discretization_concat.csv"))
 
     # Inputs of conditional prob functions
+    # TODO check the meaning of this ..
     InputVarLavelNum = 2
-    CondiProbTableLevels21 = pd.DataFrame(
+    conditional_prob_table_road_level = pd.DataFrame(
         columns=['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel', 'CondProb'])
-    CondiProbTableLevels10 = pd.DataFrame(columns=['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel',
+    conditional_prob_table_road_to_subnet_level = pd.DataFrame(columns=['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel',
                                                    'IndepenVar1', 'IndepenVar1Lvel', 'IndepenVar2', 'IndepenVar2Lvel',
                                                    'IndepenVar3', 'IndepenVar3Lvel', 'CondProb'])
     if Subnet == 1:
-        CondiProbTableLevels21ConCat = pd.DataFrame({}, columns=CondiProbTableLevels21.columns.values, index=None)
-        CondiProbTableLevels10ConCat = pd.DataFrame({}, columns=CondiProbTableLevels10.columns.values, index=None)
+        conditional_prob_table_road_level_concate = pd.DataFrame({}, columns=conditional_prob_table_road_level.columns.values, index=None)
+        columns = ['Subnet']
+        columns.extend(conditional_prob_table_road_to_subnet_level.columns.values)
+        conditional_prob_table_road_to_subnet_level_concate = pd.DataFrame({}, columns=columns, index=None)
 
-    # 'DepenVar', 'DepenVarLvel','IndepenVar','IndepenVarLvel','IndepenVar1', 'IndepenVar1Lvel','CondProb'])
-
-    CondiProbTableLevels21 = conditional_tables_instance.ConditionalProbTabLveles21GenerateJuly2022(
-        DataFrameForDisLay2outConCat, CondiProbTableLevels21, nDiscretise, InputVarLavelNum, RM, EdgeNumWithBridges,
-        EdgeListWithBridges)
+    conditional_prob_table_road_level = conditional_tables_instance.ConditionalProbTabLveles21GenerateJuly2022(
+        df_algorithm1_bridge_level_for_discretization_concatenated, conditional_prob_table_road_level, n_discretization,
+        InputVarLavelNum, RM, EdgeNumWithBridges,
+        edge_with_bridges_list)
     # here#DataFrameForDisLay2outConCat.to_csv(os.path.join(resultsPath+"DataFrameForDisLay2outConCat"+".csv"))
-    CondiProbTableLevels21ConCat = pd.concat([CondiProbTableLevels21ConCat, CondiProbTableLevels21])
-    # CondiProbTableLevels21=ConditionalProbTabLveles21Generate(DataFrameForDisLay2out,CondiProbTableLevels21,nDiscretise,InputVarLavelNum,RM )
-    CondiProbTableLevels10 = conditional_tables_instance.ConditionalProbTabLveles10GenerateJuly2022(
-        CondiProbTableLevels10, DataFrameForDisLay1InputConCat, DataFrameForDisLay0out, nDiscretise, OverallSample,
-        EdgeNumWithBridges, EdgeListWithBridges)
-    CondiProbTableLevels10ConCat = pd.concat([CondiProbTableLevels10ConCat, CondiProbTableLevels10])
-    # ConditionalProbTabLveles21GenerateJuly2022(DataFrameForDisLay2out,CondiProbTableLevels21,nDiscretise,InputVarLavelNum,RM,nEdges,AllEdges,MaintenanceRates)
-    # here#DataFrameForDisLay1Input.to_csv(os.path.join(resultsPath+"2022-04-01-DataFrameForDisLay1Input" + '.csv'))
-    # here#DataFrameForDisLay0out.to_csv(os.path.join(resultsPath+"2022-04-01-DataFrameForDisLay0out" + '.csv'))
+    conditional_prob_table_road_level_concate = pd.concat([conditional_prob_table_road_level_concate, conditional_prob_table_road_level])
+    conditional_prob_table_road_to_subnet_level = conditional_tables_instance.ConditionalProbTabLveles10GenerateJuly2022(
+        conditional_prob_table_road_to_subnet_level, df_algorithm2_input_sample_for_discretization_concate,
+        df_algorithm2_output_for_discretization, n_discretization,
+        OverallSample,
+        EdgeNumWithBridges, edge_with_bridges_list, Subnet)
+
+    conditional_prob_table_road_to_subnet_level.insert(0, 'Subnet', Subnet)
+
+    conditional_prob_table_road_to_subnet_level_concate = pd.concat([conditional_prob_table_road_to_subnet_level_concate, conditional_prob_table_road_to_subnet_level])
     if Subnet == 4:
-        CondiProbTableLevels21ConCat.to_csv(
-            os.path.join(resultsPath + "2022-04-01-CondiProbTableLevels21ConCat" + '.csv'))
-        CondiProbTableLevels10ConCat.to_csv(
-            os.path.join(resultsPath + "2022-04-01-CondiProbTableLevels10ConCat" + '.csv'))
+        conditional_prob_table_road_level_concate.to_csv(
+            os.path.join(resultsPath + "2022-04-01-conditional_prob_table_road_level_concate" + '.csv'))
+        conditional_prob_table_road_to_subnet_level_concate.to_csv(
+            os.path.join(resultsPath + "2022-04-01-conditional_prob_table_road_to_subnet_level_concate" + '.csv'))
 
 # Algorithm 3-sampling
 for Subnet in range(1, 5, 1):
-    pdAlg3InputSample = pd.DataFrame(columns=['subnetwork', 'sample_run', 'TravelTime', 'TotalCost'])
+    df_algorithm3_input_sample = pd.DataFrame(columns=['subnetwork', 'sample_run', 'TravelTime', 'TotalCost'])
     if Subnet == 1:
-        pdAlg3InputSampleConCat = pd.DataFrame({}, columns=pdAlg3InputSample.columns.values, index=None)
-    pdAlg3InputSample = system_instance.Sampling4InputAlg3(resultsPath, pdAlg2outputConCat, pdAlg3InputSample,
-                                                           MeasureList22, Subnet, OverallSample, PlotDist, n_sample)
-    pdAlg3InputSampleConCat = pd.concat([pdAlg3InputSampleConCat, pdAlg3InputSample])
+        df_algorithm3_input_sample_concatenated = pd.DataFrame({}, columns=df_algorithm3_input_sample.columns.values, index=None)
+    df_algorithm3_input_sample = system_instance.simulate_algorithm3_input_generation(resultsPath, df_algorithm2_output_concatenated,
+                                                                                      df_algorithm3_input_sample,
+                                                                                      MeasureList22, Subnet, OverallSample, PlotDist, n_sample)
+    df_algorithm3_input_sample_concatenated = pd.concat([df_algorithm3_input_sample_concatenated,
+                                                         df_algorithm3_input_sample])
     if Subnet == 4:
-        pdAlg3InputSampleConCat.to_csv(os.path.join(resultsPath + "DataFrameForpdAlg3InputSampleConCat.csv"))
+        df_algorithm3_input_sample_concatenated.to_csv(os.path.join(resultsPath +
+                                                                    "df_algorithm3_input_sample_concatenated.csv"))
 
-pdAlg3Output = pd.DataFrame(columns=['sample_run', 'TravelTime', 'TotalCost'])
-pdAlg3Output = system_instance.SimulateCostAlg3(network_instance, pdAlg3InputSampleConCat, pdAlg3Output, OverallSample)
-pdAlg3Output.to_csv(os.path.join(resultsPath + "DataFrameForpdAlg3Output.csv"))
-# write summation of costs /travel time across subnetworks..
+df_algorithm3_output = pd.DataFrame(columns=['sample_run', 'TravelTime', 'TotalCost'])
+df_algorithm3_output = system_instance.simulate_algorithm3_output_generation(network_instance,
+                                                                             df_algorithm3_input_sample_concatenated,
+                                                                             df_algorithm3_output, OverallSample)
+df_algorithm3_output.to_csv(os.path.join(resultsPath + "df_algorithm3_output.csv"))
+for MeasureId in range(0, 2, 1):
+    Measure = MeasureList22[MeasureId]
+    [df_algorithm3_output, DiscLay3out, binsLay2out] = discretization_instance.discretize_data_frame_algorithm2_and_3(
+        df_algorithm3_output, Measure, n_discretization)
+df_algorithm3_output.to_csv(os.path.join(resultsPath + "df_algorithm3_output_after_discretization.csv"))
+# TODO discretize and conditional probabiltiues for algorithm 3 ..
+# TODO R function for BN
 # pdAlg3output=SimulateAlg2Output(Subnet, EdgeAll,EdgeListWithBridges,EdgeListWithBridgesShortDis,EdgesWithTraffic,EdgesWithTrafficProb,EdgesWithTrafficOtherTime,BridgeRoadMat,
 #                       TurningMat,TurningMatMod,TravelingTimeEdge,EdgeNumWithBridges,
 #                       pdAlg2output,pdAlg2InputSample,OverallSample)

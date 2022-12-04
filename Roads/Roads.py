@@ -43,8 +43,8 @@ class Roads():
 
     ############SimulateEdgeJuly2022
 
-    def EdgeSimulationJuly2022(self, pdAlg1BridgeLevel,BridgeRoadMat,EdgeList,Subnet,Q10,Q11, Q20,Q21,RM,NumSimRun,
-                               Simulatingtime, warm_up,RehabFullCost,MaintenanceCost,AvailCoeff):
+    def edge_simulation_july_2022(self, pdAlg1BridgeLevel, BridgeRoadMat, EdgeList, Subnet, Q10, Q11, Q20, Q21, RM, NumSimRun,
+                                  Simulatingtime, warm_up, RehabFullCost, MaintenanceCost, AvailCoeff):
         lst_dic1=[]
         for eedge in range(0,len(BridgeRoadMat),1):
             Edge=EdgeList[eedge]
@@ -319,7 +319,7 @@ class Roads():
 
     ##########Sampling4InputAlg2 Function
 
-    def Sampling4InputAlg2(self,resultsPath,pdAlg1BridgeLevel,pdAlg2InputSample,MeasureList,EdgeList,EdgeNum,Subnet,OverallSample,PlotDist,n_sample):
+    def sampling_inputs_algorithm2(self, resultsPath, pdAlg1BridgeLevel, pdAlg2InputSample, MeasureList, EdgeList, EdgeNum, Subnet, OverallSample, PlotDist, n_sample):
         for EdgeID in range(0,EdgeNum,1):
             for sample_run in range(OverallSample):
                 lst_dic1 = []

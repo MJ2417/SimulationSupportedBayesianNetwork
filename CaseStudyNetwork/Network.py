@@ -20,7 +20,7 @@ from matplotlib import rc
 # from Functions11 import Functions
 from scipy.spatial import distance as dist
 from random import seed
-#from Network import *
+# from Network import *
 from scipy.stats import beta
 from itertools import product, combinations, combinations_with_replacement
 
@@ -75,6 +75,38 @@ class Network:
         size = len(EdgeAll)
 
         return size
+
+    def LeftOverRoadsTravelTime(self):
+        TravelTimeGenerated = 0.0
+        for leftoverroads_id in range(1, 9, 1):
+            if leftoverroads_id == 1:
+                TravelTime = [2, 3]
+                Probs = [0.6, 0.4]
+            elif leftoverroads_id == 2:
+                TravelTime = [3, 5]
+                Probs = [0.7, 0.3]
+            elif leftoverroads_id == 3:
+                TravelTime = [3, 6]
+                Probs = [0.5, 0.5]
+            elif leftoverroads_id == 4:
+                TravelTime = [3, 4]
+                Probs = [0.6, 0.4]
+            elif leftoverroads_id == 5:
+                TravelTime = [5, 8]
+                Probs = [0.4, 0.6]
+            elif leftoverroads_id == 6:
+                TravelTime = [7, 9]
+                Probs = [0.8, 0.2]
+            elif leftoverroads_id == 7:
+                TravelTime = [2, 4]
+                Probs = [0.5, 0.5]
+            else:
+                TravelTime = [2, 3]
+                Probs = [0.45, 0.55]
+
+            TravelTimeGenerated += np.random.choice(TravelTime, 1, p=Probs)
+
+        return TravelTimeGenerated[0]
 
     def EdgesWithBridgesofSubnetwork(self, subnetwork):
         EdgeListWithBridges = []
@@ -312,7 +344,7 @@ class Network:
                  0.31613976705490804, 0, 0.42928452579034904, 0.254575707154742, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.43264503441494606, 0, 0.5673549655850539, 0, 0, 0,
                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                ]
+            ]
 
             # TurningMat=TurningMatPandas.values.tolist()
             TurningMatMod = TurningMat

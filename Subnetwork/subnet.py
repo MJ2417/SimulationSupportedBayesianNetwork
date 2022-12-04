@@ -47,10 +47,10 @@ class Subnetworks():
     # write function with input edge number and returning edge index in matrix
     # write function with input edge number and returning whether edge has bridge or not
     # write fnction  with input edge number and returning whether edge is traffic inflow/outflow
-    def SimulateAlg2Output(self, subnetwork, EdgeAll, EdgeListWithBridges, EdgeListWithBridgesShortDis,
-                           EdgesWithTraffic, EdgesWithTrafficProb, EdgesWithTrafficOtherTime, BridgeRoadMat,
-                           TurningMat, TurningMatMod, TravelingTimeEdge, EdgeNumWithBridges,
-                           pdAlg2output, pdAlg2InputSample, OverallSample):
+    def simulate_algorithm2_output_generation(self, subnetwork, EdgeAll, EdgeListWithBridges, EdgeListWithBridgesShortDis,
+                                              EdgesWithTraffic, EdgesWithTrafficProb, EdgesWithTrafficOtherTime, BridgeRoadMat,
+                                              TurningMat, TurningMatMod, TravelingTimeEdge, EdgeNumWithBridges,
+                                              pdAlg2output, pdAlg2InputSample, OverallSample):
         # EdgeAll,EdgeListWithBridges,EdgesWithTraffic,EdgesWithTrafficProb,EdgesWithTrafficOtherTime,BridgeRoadMat,TurningMat,TravelingTimeEdge,EdgeNumWithBridges
         # TurningMatMod=TurningMat
         # for index, row in pdAlg2InputSample.iterrows():
