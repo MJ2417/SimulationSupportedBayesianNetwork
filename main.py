@@ -129,8 +129,8 @@ for Subnet in range(1, 5, 1):
             df_algorithm1_bridge_level_for_discretization_concatenated = pd.concat(
                 [df_algorithm1_bridge_level_for_discretization_concatenated,
                  df_algorithm1_bridge_level_for_discretization])
-            df_algorithm2_input_sample_for_discretization_concate = pd.concat(
-                [df_algorithm2_input_sample_for_discretization_concate, df_algorithm2_input_sample_for_discretization])
+        df_algorithm2_input_sample_for_discretization_concate = pd.concat(
+            [df_algorithm2_input_sample_for_discretization_concate, df_algorithm2_input_sample_for_discretization])
 
     if Subnet == 1:
         df_algorithm2_output_for_discretization_concat = pd.DataFrame({},
@@ -177,6 +177,8 @@ for Subnet in range(1, 5, 1):
 
     conditional_prob_table_road_to_subnet_level_concate = pd.concat([conditional_prob_table_road_to_subnet_level_concate, conditional_prob_table_road_to_subnet_level])
     if Subnet == 4:
+        df_algorithm2_input_sample_for_discretization_concate.to_csv(
+            os.path.join(resultsPath + "2022-04-01-df_algorithm2_input_sample_for_discretization_concate" + '.csv'))
         conditional_prob_table_road_level_concate.to_csv(
             os.path.join(resultsPath + "2022-04-01-conditional_prob_table_road_level_concate" + '.csv'))
         conditional_prob_table_road_to_subnet_level_concate.to_csv(
@@ -206,6 +208,8 @@ for MeasureId in range(0, 2, 1):
     [df_algorithm3_output, DiscLay3out, binsLay2out] = discretization_instance.discretize_data_frame_algorithm2_and_3(
         df_algorithm3_output, Measure, n_discretization)
 df_algorithm3_output.to_csv(os.path.join(resultsPath + "df_algorithm3_output_after_discretization.csv"))
+
+
 # TODO discretize and conditional probabiltiues for algorithm 3 ..
 # TODO R function for BN
 # pdAlg3output=SimulateAlg2Output(Subnet, EdgeAll,EdgeListWithBridges,EdgeListWithBridgesShortDis,EdgesWithTraffic,EdgesWithTrafficProb,EdgesWithTrafficOtherTime,BridgeRoadMat,
