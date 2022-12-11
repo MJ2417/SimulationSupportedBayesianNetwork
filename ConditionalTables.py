@@ -41,8 +41,8 @@ class ConditionalTables():
         pass
 
     ########## ConditionalProbTabLveles21GenerateJuly2022 function
-    def ConditionalProbTabLveles21GenerateJuly2022(self, DataFrameForDisLay2out, CondiProbTableLevels21, nDiscretise,
-                                                   InputVarLavelNum, RM, nEdges, AllEdges):
+    def ConditionalProbTabLveles21GenerateJuly2022(self, DataFrameForDisLay2out, CondiProbTableLevels21,
+                                                   nEdges, AllEdges):
         for edge in range(0, nEdges, 1):
             for variableO in range(0, 2, 1):
                 if variableO == 0:
@@ -53,35 +53,34 @@ class ConditionalTables():
                     DepenVar = 'Road' + str(AllEdges[edge]) + 'Costs'
                     IndepenVar = 'MaintenanceRate' + str(variableO)  # MaintenanceRates[edge])
                     MeasureO = 'TotalCostDisc11'
-                for inleval in product(range(InputVarLavelNum + 1), repeat=1):
-                    # for variableIOption in range(0, 2, 1):
-                    # selData=DataFrameForDisLay2out[(DataFrameForDisLay2out['Edge']==edge)&(DataFrameForDisLay2out['MaintenanceRate']==RM[edge][variableIOption] )]
-                    # print(inleval[0])
-                    UniqselData = DataFrameForDisLay2out[(DataFrameForDisLay2out['Edge'] == AllEdges[edge])]
-                    selData = DataFrameForDisLay2out[(DataFrameForDisLay2out['Edge'] == AllEdges[edge]) & (
-                            DataFrameForDisLay2out['ListMaintenanceRatesCoded'] == inleval[0])]
-                    lst_dic1 = []
-                    lst_dic2 = []
-                    conProbList = []
-                    UniqnDiscretise = UniqselData[MeasureO].nunique()
-                    BotVal = len(selData)
-                    # for outleval in product(range(nDiscretise), repeat=1):
-                    for outleval in product(range(UniqnDiscretise), repeat=1):
-                        UpVal = len(selData[(selData[MeasureO] == outleval[0])])
-                        # print(inleval,outleval,UpVal,BotVal,UpVal/BotVal)
-                        # conProbList.append(UpVal/BotVal)
-                        if BotVal != 0:
-                            lst_dic1.append(
-                                {'DepenVar': DepenVar, 'DepenVarLvel': outleval[0], 'IndepenVar': IndepenVar,
-                                 'IndepenVarLvel': inleval[0], 'CondProb': UpVal / BotVal})
-                        lst_dic2.append({'DepenVar': DepenVar, 'DepenVarLvel': outleval[0], 'IndepenVar': IndepenVar,
-                                         'IndepenVarLvel': inleval[0], 'CondProb': 1 / UniqnDiscretise})
-                    if BotVal != 0:  # sum(conProbList)==0:
-                        CondiProbTableLevels21 = CondiProbTableLevels21.append(lst_dic1)
-                    else:
-                        CondiProbTableLevels21 = CondiProbTableLevels21.append(lst_dic2)
+                UniqselData = DataFrameForDisLay2out[(DataFrameForDisLay2out['Edge'] == AllEdges[edge])]
+                UniqnDiscretiseInput = UniqselData['ListMaintenanceRatesCoded'].nunique()
+                UniqnDiscretise = UniqselData[MeasureO].nunique()
 
-            print(DataFrameForDisLay2out['Edge'], AllEdges[edge])  # edge,CondiProbTableLevels21)
+                for inleval in product(range(UniqnDiscretiseInput), repeat=1):
+                    lst_dic1 = []
+                    for outleval in product(range(UniqnDiscretise), repeat=1):
+                        selData = DataFrameForDisLay2out[(DataFrameForDisLay2out['Edge'] == AllEdges[edge]) & (
+                                DataFrameForDisLay2out['ListMaintenanceRatesCoded'] == inleval[0])]
+
+                        BotVal = len(selData.index)
+                        values = []
+                        UpVal = len(selData[(selData[MeasureO] == outleval[0])])
+                        if BotVal > 0 and UpVal > 0:
+                            # print(inleval, outleval, UpVal, BotVal, UpVal / BotVal)
+                            values.append(UpVal / BotVal)
+                        elif BotVal > 0:
+                            values.append(UpVal / BotVal)
+                        else:
+                            values.append(1 / UniqnDiscretise)
+
+                        lst_dic1.append(
+                            {'DepenVar': DepenVar, 'DepenVarLvel': outleval[0], 'IndepenVar': IndepenVar,
+                             'IndepenVarLvel': inleval[0], 'CondProb': values[0]})
+                    CondiProbTableLevels21 = pd.concat(
+                        [CondiProbTableLevels21, pd.DataFrame.from_dict(lst_dic1, orient='columns')])
+
+            # print(DataFrameForDisLay2out['Edge'], AllEdges[edge])  # edge,CondiProbTableLevels21)
         return CondiProbTableLevels21
 
     ################### ConditionalProbTabLveles10Generate function
@@ -128,13 +127,10 @@ class ConditionalTables():
                             (DataFrameForDisLay0out["sample_run"] == sample_run) & (
                                     DataFrameForDisLay0out[MeasureO] == outleval[0])]
                         if len(set(LenselDatasimrun)) == 1 and list(LenselDatasimrun)[0] == 1:
-                            # print(LenselDatasimrun, 'hooieeee', selDatasimrun, list(selDatasimrun)[0] == 1,
-                            #      len(set(LenselDatasimrun)), LenselDatasimrun)
                             BotVal += 1
-                            if len(selDatasimrunO) == 1 and list(selDatasimrunO)[0] == 1:
+                            if len(selDatasimrunO.index) > 0:
                                 UpVal += 1
 
-                    print(inleval, outleval, UpVal, BotVal, UpVal / (BotVal + 1))
                     values = [MeasureO, outleval[0]]
                     keys = ['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel',
                             'IndepenVar1', 'IndepenVar1Lvel', 'IndepenVar2', 'IndepenVar2Lvel', 'IndepenVar3',
@@ -148,15 +144,20 @@ class ConditionalTables():
                             values.append("-")
 
                     if BotVal > 0 and UpVal > 0:
+                        # print(inleval, outleval, UpVal, BotVal, UpVal / BotVal)
+                        values.append(UpVal / BotVal)
+                        lst_dic1.append(dict(zip(keys, values)))
+                    elif BotVal > 0:
                         values.append(UpVal / BotVal)
                         lst_dic1.append(dict(zip(keys, values)))
                     else:
                         values.append(1 / (UniqnDiscretiseO))
                         lst_dic1.append(dict(zip(keys, values)))
 
-                    print(lst_dic1)
-                    # if sum(conProbList)==0:
-                    CondiProbTableLevels10 = CondiProbTableLevels10.append(lst_dic1)
+                    # print(lst_dic1)
+                    # CondiProbTableLevels10 = CondiProbTableLevels10.append(lst_dic1)
+                    CondiProbTableLevels10 = pd.concat(
+                        [CondiProbTableLevels10, pd.DataFrame.from_dict(lst_dic1, orient='columns')])
 
         return CondiProbTableLevels10
 
@@ -177,62 +178,57 @@ class ConditionalTables():
                 Measure = 'TotalCostDisc11'
 
             UniqnDiscretiseInput = []
-            NumUniqnDiscretise = DataFrameout[Measure].nunique()
+            NumUniqnDiscretiseOut = DataFrameout[Measure].nunique()
             for subnet in range(0, nSubnet, 1):
-                DataFrameInputGenerated = DataFrameInput[(DataFrameInput['subnetwork'] == subnet)]
+                DataFrameInputGenerated = DataFrameInput[(DataFrameInput['subnetwork'] == subnet + 1)]
                 UniqnDiscretiseInput.append(DataFrameInputGenerated[Measure].nunique())
-            for outputleval in product(range(NumUniqnDiscretise), repeat=1):
-                for inleval in product(range(nDiscretise), repeat=nSubnet):
-                    Correct = 1
-                    for index11 in range(0, nSubnet, 1):
-                        if inleval[index11] >= UniqnDiscretiseInput[index11]:
-                            Correct = 0
-                    if Correct == 1:
-                        lst_dic1 = []
-                        lst_dic2 = []
-                        conProbList = []
-                        BotVal = 0
-                        UpVal = 0
-                        for sample_run in range(OverallSample):
-                            LenselDatasimrun = []
-                            for index11 in range(0, nEdges, 1):
-                                selDatasimrun = DataFrameInput[
-                                    (DataFrameInput["sample_run"] == sample_run) & (
-                                            DataFrameInput['subnetwork'] == subnet) & (
-                                            DataFrameInput[Measure] == inleval[index11])]
-                                LenselDatasimrun.append(len(selDatasimrun))
-                            selDatasimrunO = DataFrameForDisLay0out[
-                                (DataFrameForDisLay0out["sample_run"] == sample_run) & (
-                                        DataFrameForDisLay0out[MeasureO] == outleval[0])]
-                            if len(set(LenselDatasimrun)) == 1:
-                                BotVal += 1
-                                if len(selDatasimrunO) == 1:
-                                    UpVal += 1
 
-                        # print(inleval,outleval,UpVal,BotVal,UpVal/(BotVal+1))
-                        keys = range(7)
-                        values = [MeasureO, outleval[0]]
-                        keys = ['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel',
-                                'IndepenVar1', 'IndepenVar1Lvel', 'IndepenVar2', 'IndepenVar2Lvel', 'IndepenVar3',
-                                'IndepenVar3Lvel', 'CondProb']
-                        for index11 in range(0, 4, 1):
-                            if index11 < nEdges:
-                                values.append(MeasureToWrite[index11])
-                                values.append(inleval[index11])
-                            else:
-                                values.append(str(index11))
-                                values.append("-")
+            for inleval in product(range(nDiscretise), repeat=nSubnet):
+                for outputleval in product(range(NumUniqnDiscretiseOut), repeat=1):
+                    lst_dic1 = []
+                    BotVal = 0
+                    UpVal = 0
+                    for sample_run in range(OverallSample):
+                        LenselDatasimrun = []
+                        for index11 in range(0, nSubnet, 1):
+                            selDatasimrun = DataFrameInput[
+                                (DataFrameInput["sample_run"] == sample_run) & (
+                                        DataFrameInput['subnetwork'] == index11 + 1) & (
+                                        DataFrameInput[Measure] == inleval[index11])]
+                            LenselDatasimrun.append(len(selDatasimrun))
+                        selDatasimrunOut = DataFrameout[
+                            (DataFrameout["sample_run"] == sample_run) & (
+                                    DataFrameout[Measure] == outputleval[0])]
+                        if len(set(LenselDatasimrun)) == 1 and list(LenselDatasimrun)[0] == 1:
+                            BotVal += 1
+                            if len(selDatasimrunOut.index) > 0:
+                                UpVal += 1
 
-                        if BotVal != 0:
-                            conProbList.append(UpVal / BotVal)
-                            values.append(UpVal / BotVal)
-                            lst_dic1.append(dict(zip(keys, values)))
+                    values = [Measure, outputleval[0]]
+                    keys = ['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel',
+                            'IndepenVar1', 'IndepenVar1Lvel', 'IndepenVar2', 'IndepenVar2Lvel', 'IndepenVar3',
+                            'IndepenVar3Lvel', 'IndepenVar4', 'IndepenVar4Lvel', 'CondProb']
+                    for index11 in range(0, 4, 1):
+                        if index11 < nSubnet:
+                            values.append(MeasureToWrite[index11])
+                            values.append(inleval[index11])
                         else:
-                            conProbList.append(0)
-                            values.append(1 / (UniqnDiscretiseO))
-                            lst_dic1.append(dict(zip(keys, values)))
+                            values.append(str(index11))
+                            values.append("-")
 
-                        # if sum(conProbList)==0:
-                        CondiProbTableLevels10 = CondiProbTableLevels10.append(lst_dic1)
+                    if BotVal > 0 and UpVal > 0:
+                        # print(inleval, outputleval, UpVal, BotVal, UpVal / BotVal)
+                        values.append(UpVal / BotVal)
+                        lst_dic1.append(dict(zip(keys, values)))
+                    elif BotVal > 0:
+                        values.append(UpVal / BotVal)
+                        lst_dic1.append(dict(zip(keys, values)))
+                    else:
+                        values.append(1 / NumUniqnDiscretiseOut)
+                        lst_dic1.append(dict(zip(keys, values)))
 
-        return CondiProbTableLevels10
+                    # CondiProbTableSystemLevel = CondiProbTableSystemLevel.append(lst_dic1)
+                    CondiProbTableSystemLevel = pd.concat(
+                        [CondiProbTableSystemLevel, pd.DataFrame.from_dict(lst_dic1, orient='columns')])
+
+        return CondiProbTableSystemLevel

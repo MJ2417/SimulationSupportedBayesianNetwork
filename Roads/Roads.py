@@ -52,7 +52,7 @@ class Roads():
             for brdg in range(0,3,1):
                 if BridgeRoadMat[eedge][brdg]>-1:
                     NumBrdg+=1
-            print(Edge,NumBrdg)
+            # print(Edge,NumBrdg)
             for sim_run in range(NumSimRun):
                 #lst_dic1=[]
                 ListMaintenanceRates=[]
@@ -112,7 +112,8 @@ class Roads():
                 lst_dic1.append({'subnet':Subnet,'sim_run': sim_run, 'BridgeID': BridgeID,
                      'ListMaintenanceRates': ListMaintenanceRates,'ListMaintenanceRatesCoded':ListMaintenanceRatesCoded, 'Edge': Edge,
                      'Avail': TotalAva, 'TotalCost': TotalCost})
-        pdAlg1BridgeLevel = pdAlg1BridgeLevel.append(lst_dic1)
+        # pdAlg1BridgeLevel = pdAlg1BridgeLevel.append(lst_dic1)
+        pdAlg1BridgeLevel = pd.concat([pdAlg1BridgeLevel, pd.DataFrame.from_dict(lst_dic1, orient='columns')])
         #print(TotalAva,TotalCost,time_spent,pi)
         return pdAlg1BridgeLevel
 
@@ -353,7 +354,8 @@ class Roads():
                         lst_dic1.append({'subnet':Subnet,'sample_run': sample_run,
                              'Edge': EdgeList[EdgeID],'Avail': MeasureValue0[0], 'TotalCost': MeasureValue1[0]})
 
-                pdAlg2InputSample = pdAlg2InputSample.append(lst_dic1)
+                # pdAlg2InputSample = pdAlg2InputSample.append(lst_dic1)
+                pdAlg2InputSample = pd.concat([pdAlg2InputSample, pd.DataFrame.from_dict(lst_dic1, orient='columns')])
         #PlotDist=0
         if PlotDist == 1:
             for jjj in range(0, 2, 1):

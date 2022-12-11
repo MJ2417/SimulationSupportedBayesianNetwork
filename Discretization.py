@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib import rc
 
+pd.set_option('mode.chained_assignment', None)
 plt.rcParams["font.family"] = "serif"
 # from Functions11 import Functions
 
@@ -60,7 +61,7 @@ class Discretization():
         UniqBins = set(DataFrameForDis[Measure11].unique())
         key = range(len(UniqBins))
         Disc11List = dict(zip(sorted(UniqBins), key))
-        print('yesss', Disc11List)
+        # print('yesss', Disc11List)
         DataFrameForDis[Measure12] = DataFrameForDis[Measure11].map(Disc11List)
 
         return DataFrameForDis, Disc11List, bins11
@@ -85,7 +86,7 @@ class Discretization():
             # nDiscretiseAlter = nDiscretise
             # LowIntAlter = LowInt
         for www in range(lowIndex, nDiscretiseAlter, 1):
-            bins.append(LowIntAlter + www * ((HighInt - LowIntAlter) / (nDiscretiseAlter)))
+            bins.append(LowIntAlter + www * ((HighInt - LowIntAlter) / nDiscretiseAlter))
             labels.append(www + 1)
         if Measure != 'TotalCost' and Measure != 'TravelTime':
             bins.append(max(np.max(selData), HighInt + 200))
@@ -114,16 +115,16 @@ class Discretization():
         Measure12 = Measure + 'Disc11'
         # bins11 = pd.IntervalIndex.from_arrays(bins[:len(bins) - 1], bins[1:])
         # selData12=DataFrameForDis[Measure]
-        # print(DataFrameForDis)
         # print(bins11)
+        # print('typeeeeeeeeeeeeeeeeeeeee', DataFrameForDis.dtypes)
         DataFrameForDis[Measure11] = pd.cut(DataFrameForDis[Measure], bins11).astype(str).str.strip(
             '()[]')  # ,labels=["1","2","3","4","5","6","7"])
         UniqBins = set(DataFrameForDis[Measure11].unique())
-        # print('yes', UniqBins)
-        # print('uu', DataFrameForDis[Measure11])
+        #print('yes', bins11)
+        #print('uu', DataFrameForDis[Measure])
         key = range(len(UniqBins))
         Disc11List = dict(zip(sorted(list(UniqBins)), key))
-        # print('hoouu', Disc11List)
+        #print('hoouu', Disc11List)
         DataFrameForDis[Measure12] = DataFrameForDis[Measure11].map(Disc11List)
         # apply(lambda x: Disc11List.get(x,x))
         # DataFrameForDis[Measure11].map(Disc11List)

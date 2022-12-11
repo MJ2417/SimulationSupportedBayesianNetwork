@@ -124,7 +124,7 @@ class Network:
     def CharacterizeSubnet(self, subnet):
         if subnet == 1:
             EdgeAll = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 40, 67, 68]
-            print(EdgeAll.index(8))
+            #print(EdgeAll.index(8))
             EdgeListWithBridges = [13, 40]
             EdgeListWithBridgesShortDis = [[13, 40, 1]]
             EdgesWithTraffic = [67, 68]
@@ -133,7 +133,7 @@ class Network:
             EdgesWithTrafficOtherTime = [3, 5]
             BridgeRoadMat = [[1, -1, -1], [0, 0, 0]]  # [[0,0,-1],[1,-1,-1],[0,-1,-1],[1,-1,-1]]
             EdgeNumWithBridges = len(BridgeRoadMat)
-            print('numbridge', EdgeNumWithBridges)
+            #print('numbridge', EdgeNumWithBridges)
             TurningMat = [[0, 0.5, 0.22, 0.28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0.64, 0, 0, 0, 0.36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0.31, 0, 0, 0.19, 0, 0.12, 0.1, 0, 0, 0, 0, 0, 0, 0.28, 0],
@@ -167,8 +167,6 @@ class Network:
                              [0, 0, 0, 0, 0, 0, 0.28, 0, 0, 0, 0.35, 0.37, 0, 0, 0]
                              ]
             TravelingTimeEdge = [1, 8, 3, 1, 3, 1, 5, 2, 4, 9, 5, 12, 12, 2, 3]
-            print('ii')
-            print(TurningMat)
         if subnet == 2:
             # TurningMatMod=TurningMat
             EdgeAll = [6, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 37, 48, 49, 73, 74]
@@ -262,7 +260,6 @@ class Network:
                                            header=None)  # read_excel('Subnetwork4-turningprob.xlsx')
             # TurningMatPandas=TurningMatPandas.mask(np.isinf(TurningMatPandas))#.replace(np.nan,0)#fillna(0)
             # TurningMatPandas.replace(np.nan,0)
-            print(TurningMatPandas)
             TurningMatPandas.to_csv('Subnetwork4-turningprob1.csv')
             TurningMat = [
                 [0, 0, 0, 0, 0, 0, 0, 0.28, 0, 0.36, 0.36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -351,7 +348,7 @@ class Network:
             TravelingTimeEdge = [15, 4, 8, 2, 4, 3, 6, 7, 2, 2, 3, 4, 7, 1, 3, 1, 7, 9, 6, 2, 4, 4, 2, 5, 3, 2, 4, 4, 4,
                                  1, 4, 4, 3, 5, 7]
 
-        print(type(TurningMatMod))
+        #print(type(TurningMatMod))
 
         # print(TurningMatMod)
         # print(BridgeRoadMat[1]) #print(BridgeRoadMat[1][1]) #print(len(BridgeRoadMat))

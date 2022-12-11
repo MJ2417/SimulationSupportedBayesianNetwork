@@ -7,6 +7,9 @@
 # os.environ["PATH"] += os.pathsep+ r"C:\Program Files\Graphviz\bin"
 
 import os, sys
+import warnings
+
+# warnings.filterwarnings('ignore')
 
 os.environ["R_HOME"] = r"C:\Program Files\R\R-4.2.1"
 os.environ["PATH"] = r"C:\Program Files\R\R-4.2.1\bin\x64" + ";" + os.environ["PATH"]
@@ -36,7 +39,7 @@ system_instance = SystemAll()
 discretization_instance = Discretization()
 conditional_tables_instance = ConditionalTables()
 for Subnet in range(1, 5, 1):
-
+    print('Progressing with Algorithm 1&2 of subnetwork', Subnet)
     [EdgeAll, edge_with_bridges_list, EdgeListWithBridgesShortDis, EdgesWithTraffic, EdgesWithTrafficProb,
      EdgesWithTrafficOtherTime, BridgeRoadMat, TurningMat, TurningMatMod, TravelingTimeEdge,
      EdgeNumWithBridges] = network_instance.CharacterizeSubnet(Subnet)
@@ -95,8 +98,6 @@ for Subnet in range(1, 5, 1):
 
     # discretization
     indexLoop = 0
-    df_algorithm1_bridge_level_for_discretization_concatenated = pd.DataFrame()
-    df_algorithm2_input_sample_for_discretization_concate = pd.DataFrame()
     np.set_printoptions(threshold=sys.maxsize)
     df_algorithm2_output_for_discretization = df_algorithm2_output
     for edge_with_bridge_instance in edge_with_bridges_list:
@@ -107,7 +108,9 @@ for Subnet in range(1, 5, 1):
             (df_algorithm2_input_sample['Edge'] ==
              edge_with_bridge_instance)]  # layer 1-input
 
-        if indexLoop == 0:
+        if indexLoop == 0 and Subnet == 1:
+            df_algorithm1_bridge_level_for_discretization_concatenated = pd.DataFrame()
+            df_algorithm2_input_sample_for_discretization_concate = pd.DataFrame()
             df_algorithm1_bridge_level_for_discretization_concatenated = pd.DataFrame({},
                                                                                       columns=df_algorithm1_bridge_level_for_discretization.columns.values,
                                                                                       index=None)  # copy.deepcopy(DataFrameForDisLay2out)
@@ -126,9 +129,9 @@ for Subnet in range(1, 5, 1):
             [df_algorithm2_input_sample_for_discretization,
              df_algorithm2_bins] = discretization_instance.discretize_data_frame_with_bins(
                 df_algorithm2_input_sample_for_discretization, Measure, binsLay2out)
-            df_algorithm1_bridge_level_for_discretization_concatenated = pd.concat(
-                [df_algorithm1_bridge_level_for_discretization_concatenated,
-                 df_algorithm1_bridge_level_for_discretization])
+        df_algorithm1_bridge_level_for_discretization_concatenated = pd.concat(
+            [df_algorithm1_bridge_level_for_discretization_concatenated,
+             df_algorithm1_bridge_level_for_discretization])
         df_algorithm2_input_sample_for_discretization_concate = pd.concat(
             [df_algorithm2_input_sample_for_discretization_concate, df_algorithm2_input_sample_for_discretization])
 
@@ -136,14 +139,44 @@ for Subnet in range(1, 5, 1):
         df_algorithm2_output_for_discretization_concat = pd.DataFrame({},
                                                                       columns=df_algorithm2_output_for_discretization.columns.values,
                                                                       index=None)
+    df_algorithm3_input_sample = pd.DataFrame(columns=['subnetwork', 'sample_run', 'TravelTime', 'TotalCost'])
+    if Subnet == 1:
+        df_algorithm3_input_sample_concatenated = pd.DataFrame({}, columns=df_algorithm3_input_sample.columns.values,
+                                                               index=None)
+    df_algorithm3_input_sample = system_instance.simulate_algorithm3_input_generation(resultsPath,
+                                                                                      df_algorithm2_output_concatenated,
+                                                                                      df_algorithm3_input_sample,
+                                                                                      MeasureList22, Subnet,
+                                                                                      OverallSample, PlotDist,
+                                                                                      n_sample)
+    df_algorithm3_input_sample_concatenated = pd.concat([df_algorithm3_input_sample_concatenated,
+                                                         df_algorithm3_input_sample])
+
+    if Subnet == 1:
+        df_algorithm3_input_sample_concatenated_discretized = pd.DataFrame(
+            columns=['subnetwork', 'sample_run', 'TravelTime', 'TotalCost', 'TravelTimeDisc11', 'TotalCostDisc11'])
+
     for MeasureId in range(0, 2, 1):
         Measure22 = MeasureList22[MeasureId]
         [df_algorithm2_output_for_discretization, DiscLay0out,
          binsLay0out] = discretization_instance.discretize_data_frame_algorithm2_and_3(
             df_algorithm2_output_for_discretization, Measure22, n_discretization)
+
+        # Here Mohsen
+        [df_algorithm3_input_sample, DiscLay3In] = discretization_instance. \
+            discretize_data_frame_with_bins(
+            df_algorithm3_input_sample, Measure22, binsLay0out)
+
+    df_algorithm3_input_sample_concatenated_discretized = pd.concat(
+        [df_algorithm3_input_sample_concatenated_discretized,
+         df_algorithm3_input_sample])
+
     df_algorithm2_output_for_discretization_concat = pd.concat(
         [df_algorithm2_output_for_discretization_concat, df_algorithm2_output_for_discretization])
     if Subnet == 4:
+        df_algorithm1_bridge_level_for_discretization_concatenated.to_csv(
+            os.path.join(resultsPath + "df_algorithm1_bridge_level_for_discretization_concatenated.csv")
+        )
         df_algorithm2_output_for_discretization_concat.to_csv(
             os.path.join(resultsPath + "df_algorithm2_output_for_discretization_concat.csv"))
 
@@ -152,21 +185,24 @@ for Subnet in range(1, 5, 1):
     InputVarLavelNum = 2
     conditional_prob_table_road_level = pd.DataFrame(
         columns=['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel', 'CondProb'])
-    conditional_prob_table_road_to_subnet_level = pd.DataFrame(columns=['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel',
-                                                   'IndepenVar1', 'IndepenVar1Lvel', 'IndepenVar2', 'IndepenVar2Lvel',
-                                                   'IndepenVar3', 'IndepenVar3Lvel', 'CondProb'])
+    conditional_prob_table_road_to_subnet_level = pd.DataFrame(
+        columns=['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel',
+                 'IndepenVar1', 'IndepenVar1Lvel', 'IndepenVar2', 'IndepenVar2Lvel',
+                 'IndepenVar3', 'IndepenVar3Lvel', 'CondProb'])
     if Subnet == 1:
-        conditional_prob_table_road_level_concate = pd.DataFrame({}, columns=conditional_prob_table_road_level.columns.values, index=None)
+        conditional_prob_table_road_level_concate = pd.DataFrame({},
+                                                                 columns=conditional_prob_table_road_level.columns.values,
+                                                                 index=None)
         columns = ['Subnet']
         columns.extend(conditional_prob_table_road_to_subnet_level.columns.values)
         conditional_prob_table_road_to_subnet_level_concate = pd.DataFrame({}, columns=columns, index=None)
 
     conditional_prob_table_road_level = conditional_tables_instance.ConditionalProbTabLveles21GenerateJuly2022(
-        df_algorithm1_bridge_level_for_discretization_concatenated, conditional_prob_table_road_level, n_discretization,
-        InputVarLavelNum, RM, EdgeNumWithBridges,
-        edge_with_bridges_list)
+        df_algorithm1_bridge_level_for_discretization_concatenated, conditional_prob_table_road_level,
+        EdgeNumWithBridges, edge_with_bridges_list)
     # here#DataFrameForDisLay2outConCat.to_csv(os.path.join(resultsPath+"DataFrameForDisLay2outConCat"+".csv"))
-    conditional_prob_table_road_level_concate = pd.concat([conditional_prob_table_road_level_concate, conditional_prob_table_road_level])
+    conditional_prob_table_road_level_concate = pd.concat(
+        [conditional_prob_table_road_level_concate, conditional_prob_table_road_level])
     conditional_prob_table_road_to_subnet_level = conditional_tables_instance.ConditionalProbTabLveles10GenerateJuly2022(
         conditional_prob_table_road_to_subnet_level, df_algorithm2_input_sample_for_discretization_concate,
         df_algorithm2_output_for_discretization, n_discretization,
@@ -175,7 +211,8 @@ for Subnet in range(1, 5, 1):
 
     conditional_prob_table_road_to_subnet_level.insert(0, 'Subnet', Subnet)
 
-    conditional_prob_table_road_to_subnet_level_concate = pd.concat([conditional_prob_table_road_to_subnet_level_concate, conditional_prob_table_road_to_subnet_level])
+    conditional_prob_table_road_to_subnet_level_concate = pd.concat(
+        [conditional_prob_table_road_to_subnet_level_concate, conditional_prob_table_road_to_subnet_level])
     if Subnet == 4:
         df_algorithm2_input_sample_for_discretization_concate.to_csv(
             os.path.join(resultsPath + "2022-04-01-df_algorithm2_input_sample_for_discretization_concate" + '.csv'))
@@ -184,31 +221,41 @@ for Subnet in range(1, 5, 1):
         conditional_prob_table_road_to_subnet_level_concate.to_csv(
             os.path.join(resultsPath + "2022-04-01-conditional_prob_table_road_to_subnet_level_concate" + '.csv'))
 
-# Algorithm 3-sampling
-for Subnet in range(1, 5, 1):
-    df_algorithm3_input_sample = pd.DataFrame(columns=['subnetwork', 'sample_run', 'TravelTime', 'TotalCost'])
-    if Subnet == 1:
-        df_algorithm3_input_sample_concatenated = pd.DataFrame({}, columns=df_algorithm3_input_sample.columns.values, index=None)
-    df_algorithm3_input_sample = system_instance.simulate_algorithm3_input_generation(resultsPath, df_algorithm2_output_concatenated,
-                                                                                      df_algorithm3_input_sample,
-                                                                                      MeasureList22, Subnet, OverallSample, PlotDist, n_sample)
-    df_algorithm3_input_sample_concatenated = pd.concat([df_algorithm3_input_sample_concatenated,
-                                                         df_algorithm3_input_sample])
+    # Algorithm 3-sampling
+    # for Subnet in range(1, 5, 1):
+
     if Subnet == 4:
         df_algorithm3_input_sample_concatenated.to_csv(os.path.join(resultsPath +
                                                                     "df_algorithm3_input_sample_concatenated.csv"))
+        df_algorithm3_input_sample_concatenated_discretized. \
+            to_csv(os.path.join(resultsPath +
+                                "df_algorithm3_input_sample_concatenated_discretized.csv"))
 
+print('Progressing with Algorithm 3')
 df_algorithm3_output = pd.DataFrame(columns=['sample_run', 'TravelTime', 'TotalCost'])
 df_algorithm3_output = system_instance.simulate_algorithm3_output_generation(network_instance,
                                                                              df_algorithm3_input_sample_concatenated,
                                                                              df_algorithm3_output, OverallSample)
 df_algorithm3_output.to_csv(os.path.join(resultsPath + "df_algorithm3_output.csv"))
+
 for MeasureId in range(0, 2, 1):
     Measure = MeasureList22[MeasureId]
+
     [df_algorithm3_output, DiscLay3out, binsLay2out] = discretization_instance.discretize_data_frame_algorithm2_and_3(
         df_algorithm3_output, Measure, n_discretization)
+
+df_algorithm3_input_sample_concatenated.to_csv(os.path.join(resultsPath +
+                                                            "df_algorithm3_input_sample_concatenated-discretized.csv"))
 df_algorithm3_output.to_csv(os.path.join(resultsPath + "df_algorithm3_output_after_discretization.csv"))
 
+conditional_prob_table_system_level = pd.DataFrame(
+    columns=['DepenVar', 'DepenVarLvel', 'IndepenVar', 'IndepenVarLvel',
+             'IndepenVar1', 'IndepenVar1Lvel', 'IndepenVar2', 'IndepenVar2Lvel',
+             'IndepenVar3', 'IndepenVar3Lvel', 'IndepenVar4', 'IndepenVar4Lvel', 'CondProb'])
+conditional_prob_table_system_level = conditional_tables_instance.ConditionalProbTabSystemLevelJuly2022(
+    conditional_prob_table_system_level, df_algorithm3_input_sample_concatenated_discretized,
+    df_algorithm3_output, n_discretization, OverallSample, 4)
+conditional_prob_table_system_level.to_csv(os.path.join(resultsPath + "conditional_prob_table_system_level.csv"))
 
 # TODO discretize and conditional probabiltiues for algorithm 3 ..
 # TODO R function for BN

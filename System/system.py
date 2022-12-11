@@ -77,9 +77,10 @@ class SystemAll():
                     MeasureValue1.append(CDFfunctionInv(np.random.uniform(0, 1)))
                     # MeasureValue.append(MeasureValueOne[0])
                     lst_dic1.append({'subnetwork': Subnet, 'sample_run': sample_run,
-                                     'TravelTime': MeasureValue0[0], 'TotalCost': MeasureValue1[0]})
+                                     'TravelTime': float(MeasureValue0[0]), 'TotalCost': float(MeasureValue1[0])})
 
-            pdAlg3InputSample = pdAlg3InputSample.append(lst_dic1)
+            # pdAlg3InputSample = pdAlg3InputSample.append(lst_dic1)
+            pdAlg3InputSample = pd.concat([pdAlg3InputSample, pd.DataFrame(lst_dic1)])
         # PlotDist=0
         if PlotDist == 1:
             for jjj in range(0, 2, 1):
@@ -137,8 +138,8 @@ class SystemAll():
             term = np.sum(selData['TravelTime'].to_list())
             TotalTravelTime = term + TotalTravelTimeLeftOver - 4 + 1
 
-
             lst_dic1.append({'sample_run': sample_run, 'TravelTime': TotalTravelTime, 'TotalCost': term1})
-            pdAlg3OutputConCat = pdAlg3OutputConCat.append(lst_dic1)
+            #pdAlg3OutputConCat = pdAlg3OutputConCat.append(lst_dic1)
+            pdAlg3OutputConCat = pd.concat([pdAlg3OutputConCat, pd.DataFrame(lst_dic1)])
 
         return pdAlg3OutputConCat

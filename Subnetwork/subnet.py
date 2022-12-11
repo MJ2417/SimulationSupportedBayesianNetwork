@@ -181,7 +181,7 @@ class Subnetworks():
             IncomMatEdit = preprocessing.normalize(IncomMatEdit11, norm="l1")
             # print((IncomMatEdit))
             MC = MarkovChain(IncomMatEdit, verbose=True)
-            print(MC.K)
+            #Here Mohsen eee. print(MC.K)
             # for index11, row11 in selData.iterrows():
             #    for EdgeID in range(0, 2, 1):
             #        if row11["Edge"] == EdgeID:
@@ -224,8 +224,8 @@ class Subnetworks():
             term1 = term - term2
             lst_dic1.append(
                 {'subnetwork': subnetwork, 'sample_run': sample_run, 'TravelTime': MC.K, 'TotalCost': term1})
-            print(lst_dic1)
-            pdAlg2output = pdAlg2output.append(lst_dic1)
+            #pdAlg2output = pdAlg2output.append(lst_dic1)
+            pdAlg2output = pd.concat([pdAlg2output, pd.DataFrame.from_dict(lst_dic1, orient='columns')])
 
         return pdAlg2output
         # print(pdAlg2output)

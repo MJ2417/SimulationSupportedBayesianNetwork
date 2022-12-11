@@ -100,7 +100,7 @@ class MarkovChain(object):
     """
 
     def __init__(self, P, verbose=False):
-        self.verbose = verbose
+        self.verbose = False #verbose
         self.P = P
         self.ec, self.tc = self.MC_structure()
         self.bMultiChain = len(self.ec) > 1
