@@ -6,23 +6,11 @@ from rpy2.robjects import numpy2ri, pandas2ri
 
 numpy2ri.activate()
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 plt.rcParams["font.family"] = "serif"
 os.getcwd()
-import copy
-import networkx as nx
-import scipy as sp
-import numpy as np
-import tkinter as tk
-from tkinter import filedialog
-import pandas as pd
-from matplotlib import rc
-# from Functions11 import Functions
-from scipy.spatial import distance as dist
-from random import seed
-# from Network import *
-from scipy.stats import beta
-from itertools import product, combinations, combinations_with_replacement
 
 
 ###############CharacterizeSubnet
@@ -124,7 +112,7 @@ class Network:
     def CharacterizeSubnet(self, subnet):
         if subnet == 1:
             EdgeAll = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 40, 67, 68]
-            #print(EdgeAll.index(8))
+            # print(EdgeAll.index(8))
             EdgeListWithBridges = [13, 40]
             EdgeListWithBridgesShortDis = [[13, 40, 1]]
             EdgesWithTraffic = [67, 68]
@@ -133,7 +121,7 @@ class Network:
             EdgesWithTrafficOtherTime = [3, 5]
             BridgeRoadMat = [[1, -1, -1], [0, 0, 0]]  # [[0,0,-1],[1,-1,-1],[0,-1,-1],[1,-1,-1]]
             EdgeNumWithBridges = len(BridgeRoadMat)
-            #print('numbridge', EdgeNumWithBridges)
+            # print('numbridge', EdgeNumWithBridges)
             TurningMat = [[0, 0.5, 0.22, 0.28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0.64, 0, 0, 0, 0.36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0.31, 0, 0, 0.19, 0, 0.12, 0.1, 0, 0, 0, 0, 0, 0, 0.28, 0],
@@ -348,8 +336,4 @@ class Network:
             TravelingTimeEdge = [15, 4, 8, 2, 4, 3, 6, 7, 2, 2, 3, 4, 7, 1, 3, 1, 7, 9, 6, 2, 4, 4, 2, 5, 3, 2, 4, 4, 4,
                                  1, 4, 4, 3, 5, 7]
 
-        #print(type(TurningMatMod))
-
-        # print(TurningMatMod)
-        # print(BridgeRoadMat[1]) #print(BridgeRoadMat[1][1]) #print(len(BridgeRoadMat))
         return EdgeAll, EdgeListWithBridges, EdgeListWithBridgesShortDis, EdgesWithTraffic, EdgesWithTrafficProb, EdgesWithTrafficOtherTime, BridgeRoadMat, TurningMat, TurningMatMod, TravelingTimeEdge, EdgeNumWithBridges

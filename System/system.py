@@ -1,43 +1,16 @@
-import os, sys, sklearn
-
+import os
 os.environ["R_HOME"] = r"C:\Program Files\R\R-4.0.3"
 os.environ["PATH"] = r"C:\Program Files\R\R-4.0.3\bin\x64" + ";" + os.environ["PATH"]
-import random
-import rpy2.robjects as robjects
-import networkx as nx
 from scipy.stats import truncexpon
-from networkx.drawing.nx_agraph import to_agraph
-from rpy2.robjects import numpy2ri, pandas2ri
-from rpy2.robjects.packages import STAP
-from scipy.sparse import csr_matrix
-import scipy
+from rpy2.robjects import numpy2ri
 from numpy import random
-from numpy import savetxt
-from pandas.core.common import flatten
-import rpy2.robjects as ro
-
-# ro.conversion.py2rpy=numpy2ri
 numpy2ri.activate()
-import copy
-import networkx as nx
-import scipy as sp
-import numpy as np
 import matplotlib.pyplot as plt
-import tkinter as tk
-from tkinter import filedialog
-import pandas as pd
-from matplotlib import rc
-
 plt.rcParams["font.family"] = "serif"
-# from Functions11 import Functions
-from scipy.spatial import distance as dist
-
 os.getcwd()
 import more_itertools
 from scipy.interpolate import interp1d
 from CaseStudyNetwork.Network import *
-from scipy.stats import beta
-from itertools import product, combinations, combinations_with_replacement
 
 
 class SystemAll():

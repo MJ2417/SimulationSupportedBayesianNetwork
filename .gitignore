@@ -8,3 +8,5 @@ OutputResults/df_algorithm3_input_sample_concatenated.csv
 OutputResults/df_algorithm3_output.csv
 *.csv
 *.csv
+OutputResults/-Alg2Sample-1subnetTotalCost.png
+*.png

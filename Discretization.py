@@ -2,21 +2,17 @@ import os, sys, sklearn
 
 os.environ["R_HOME"] = r"C:\Program Files\R\R-4.0.3"
 os.environ["PATH"] = r"C:\Program Files\R\R-4.0.3\bin\x64" + ";" + os.environ["PATH"]
-import random
 import rpy2.robjects as robjects
 from rpy2.robjects import numpy2ri, pandas2ri
 from rpy2.robjects.packages import STAP
 
-# ro.conversion.py2rpy=numpy2ri
 numpy2ri.activate()
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib import rc
 
 pd.set_option('mode.chained_assignment', None)
 plt.rcParams["font.family"] = "serif"
-# from Functions11 import Functions
 
 
 os.getcwd()
@@ -68,9 +64,9 @@ class Discretization():
 
     def discretize_data_frame_algorithm2_and_3(self, DataFrameForDis, Measure, nDiscretise):
         selData00 = DataFrameForDis[Measure]
-        selData11 = selData00.to_numpy()  # np.array(selData00)#.flatten() #selData=np.reshape(selData,-1)
+        selData11 = selData00.to_numpy()
         selData = np.asmatrix(
-            selData11)  # np.concatenate(selData11).flatten()#np.transpose(selData11).reshape(len(selData11))
+            selData11)
         [LowInt, HighInt] = self.CalHighDensityReg(selData, 2)
         bins = [0]
         labels = [0]
@@ -89,11 +85,11 @@ class Discretization():
             bins.append(LowIntAlter + www * ((HighInt - LowIntAlter) / nDiscretiseAlter))
             labels.append(www + 1)
         if Measure != 'TotalCost' and Measure != 'TravelTime':
-            bins.append(max(np.max(selData), HighInt + 200))
+            bins.append(max(np.max(selData), HighInt + 10))
         if Measure == 'TravelTime':
-            bins.append(max(np.max(selData), HighInt + 2))
+            bins.append(max(np.max(selData), HighInt + 1))
         elif Measure == 'TotalCost':
-            bins.append(max(np.max(selData), HighInt + 200))
+            bins.append(max(np.max(selData), HighInt + 10))
         Measure11 = Measure + 'Disc'
         Measure12 = Measure + 'Disc11'
         bins11 = pd.IntervalIndex.from_arrays(bins[:len(bins) - 1], bins[1:])
@@ -143,7 +139,7 @@ class Discretization():
                 library("stats")
                 library("hdrcde")
                 library(stringi)
-                Intervals<-hdr(matrix,prob=0.7)
+                Intervals<-hdr(matrix,prob=0.9)
                 UpperInt<-ifelse(Intervals$hdr[2]>1,1,Intervals$hdr[2])
                 LowerInt<-ifelse(Intervals$hdr[1]<0,0.00001,Intervals$hdr[1]) 
                 return(c(LowerInt,UpperInt))

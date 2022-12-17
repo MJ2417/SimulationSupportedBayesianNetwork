@@ -10,11 +10,13 @@ RehabFullCost = 200
 MaintenanceCost = 10
 AvailCoeff = [1.0, 0.8, 0.0, 0.6]
 
-NumSimRun = 100
-n_sample = 50  # for building density
-OverallSample = 60  # for generation
+
+### For simulation validation, NumSimRun > OverallSample
+NumSimRun = 2000  # road simulation
+n_sample = 1500  # for building density algorithms 2 &3
+OverallSample = 1500  # for generation for input/output sampling of algorithms 1,2,3
 PlotDist = 0
 measure_list = ['Avail', 'TotalCost']
 MeasureList22 = ['TravelTime', 'TotalCost']
 # Subnet=4
-n_discretization = 4
+n_discretization = 5
