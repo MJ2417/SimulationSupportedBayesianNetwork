@@ -11,8 +11,8 @@ import warnings
 
 # warnings.filterwarnings('ignore')
 
-os.environ["R_HOME"] = r"C:\Program Files\R\R-4.2.1"
-os.environ["PATH"] = r"C:\Program Files\R\R-4.2.1\bin\x64" + ";" + os.environ["PATH"]
+os.environ["R_HOME"] = r"C:\Program Files\R\R-4.2.2"
+os.environ["PATH"] = r"C:\Program Files\R\R-4.2.2\bin\x64" + ";" + os.environ["PATH"]
 from rpy2.robjects import numpy2ri, pandas2ri
 from datetime import datetime
 
@@ -45,8 +45,8 @@ for Subnet in range(1, 5, 1):
     define dataframes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     '''
     df_algorithm1_bridge_level = pd.DataFrame(
-        columns=['subnet', 'sim_run', 'BridgeID', 'ListMaintenanceRates', 'ListMaintenanceRatesCoded', 'Edge', 'Avail',
-                 'TotalCost'])
+        columns=['subnet', 'sim_run', 'NumBrdg', 'ListMaintenanceRates', 'ListMaintenanceRatesCoded', 'Edge', 'Avail',
+                 'TotalCost', 'bridge1Rate', 'bridge2Rate', 'bridge3Rate'])
     df_algorithm2_input_sample = pd.DataFrame(columns=['subnet', 'sample_run', 'Edge', 'Avail', 'TotalCost'])
     df_algorithm2_output = pd.DataFrame(columns=['subnetwork', 'sample_run', 'TravelTime', 'TotalCost'])
     df_algorithm3_input_sample = pd.DataFrame(columns=['subnetwork', 'sample_run', 'TravelTime', 'TotalCost'])
@@ -195,13 +195,14 @@ for Subnet in range(1, 5, 1):
     '''
     conditional_prob_table_road_level = conditional_tables_instance.ConditionalProbTabLveles21GenerateJuly2022(
         df_algorithm1_bridge_level_for_discretization_concatenated, conditional_prob_table_road_level,
-        EdgeNumWithBridges, edge_with_bridges_list)
+        EdgeNumWithBridges, edge_with_bridges_list, OverallSample)
     # here#DataFrameForDisLay2outConCat.to_csv(os.path.join(resultsPath+"DataFrameForDisLay2outConCat"+".csv"))
     conditional_prob_table_road_level_concate = pd.concat(
         [conditional_prob_table_road_level_concate, conditional_prob_table_road_level])
     conditional_prob_table_road_to_subnet_level = conditional_tables_instance.ConditionalProbTabLveles10GenerateJuly2022(
         conditional_prob_table_road_to_subnet_level, df_algorithm2_input_sample_for_discretization_concate,
-        df_algorithm2_output_for_discretization, n_discretization,
+        df_algorithm2_output_for_discretization, conditional_prob_table_road_level_concate,
+        n_discretization,
         OverallSample,
         EdgeNumWithBridges, edge_with_bridges_list, Subnet)
 
@@ -298,14 +299,13 @@ conditional_prob_table_system_level = pd.DataFrame(
              'IndepenVar3', 'IndepenVar3Lvel', 'IndepenVar4', 'IndepenVar4Lvel', 'CondProb'])
 conditional_prob_table_system_level = conditional_tables_instance.ConditionalProbTabSystemLevelJuly2022(
     conditional_prob_table_system_level, df_algorithm3_input_sample_concatenated_discretized,
-    df_algorithm3_output, n_discretization, OverallSample, 4)
+    df_algorithm3_output, conditional_prob_table_road_to_subnet_level_concate, n_discretization, OverallSample, 4)
 conditional_prob_table_system_level.to_csv(os.path.join(resultsPath + "conditional_prob_table_system_level.csv"))
 
-# TODO discretize and conditional probabiltiues for algorithm 3 ..
-# TODO R function for BN
-# pdAlg3output=SimulateAlg2Output(Subnet, EdgeAll,EdgeListWithBridges,EdgeListWithBridgesShortDis,EdgesWithTraffic,EdgesWithTrafficProb,EdgesWithTrafficOtherTime,BridgeRoadMat,
-#                       TurningMat,TurningMatMod,TravelingTimeEdge,EdgeNumWithBridges,
-#                       pdAlg2output,pdAlg2InputSample,OverallSample)
+# TODO discretize and conditional probabiltiues for algorithm 3 .. TODO R function for BN
+#  pdAlg3output=SimulateAlg2Output(Subnet, EdgeAll,EdgeListWithBridges,EdgeListWithBridgesShortDis,EdgesWithTraffic,
+#  EdgesWithTrafficProb,EdgesWithTrafficOtherTime,BridgeRoadMat, TurningMat,TurningMatMod,TravelingTimeEdge,
+#  EdgeNumWithBridges, pdAlg2output,pdAlg2InputSample,OverallSample)
 
 
 # Search for BigAssumptionMohsen this is an important about the complicated equation

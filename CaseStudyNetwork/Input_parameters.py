@@ -1,4 +1,4 @@
-resultsPath = 'C:\\Users\\Mohsen\\Documents\\PythonProjects\\Opac\\OutputResults\\'
+resultsPath = 'C:\\Users\\Mohsen\\Documents\\PythonProjects\\Opac\\OutputResults24June2023\\'
 RM = [[0.2, 0.5], [0.15, 0.4]]
 Q10 = ([[-1 / 30, 1 / 30, 0, 0], [0, -0.25, 0.05, RM[0][0]], [0.1, 0.2, -0.3, 0], [1, 0, 0, -1]])
 Q11 = ([[-1 / 30, 1 / 30, 0, 0], [0, -0.2, 0.05, RM[1][0]], [0.1, 0.2, -0.3, 0], [1, 0, 0, -1]])
@@ -12,9 +12,9 @@ AvailCoeff = [1.0, 0.8, 0.0, 0.6]
 
 
 ### For simulation validation, NumSimRun > OverallSample
-NumSimRun = 2000  # road simulation
-n_sample = 1500  # for building density algorithms 2 &3
-OverallSample = 1500  # for generation for input/output sampling of algorithms 1,2,3
+NumSimRun = 300#2000  # road simulation
+n_sample = 500#1500  # for building density algorithms 2 &3
+OverallSample = 500#1500  # for generation for input/output sampling of algorithms 1,2,3
 PlotDist = 0
 measure_list = ['Avail', 'TotalCost']
 MeasureList22 = ['TravelTime', 'TotalCost']

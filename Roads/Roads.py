@@ -61,6 +61,9 @@ class Roads():
                 # lst_dic1=[]
                 ListMaintenanceRates = []
                 ListMaintenanceRatesCoded = -5
+                MaintenanceRate00 = -1
+                MaintenanceRate01 = -1
+                MaintenanceRate02 = -1
                 for BridgeID in range(0, NumBrdg, 1):
                     if np.random.random() < 0.6:
                         MaintenanceRate = RM[BridgeRoadMat[eedge][BridgeID]][0]
@@ -96,6 +99,13 @@ class Roads():
                                 QQ3Road = Q21
                         # [TotalAva,TotalCost,pi, time_spent] = simulate_cmc(Q2, 1100, 500)
                         # sim_run,BridgeID,MaintenanceRate,MaintenanceRatePolicy,Edge
+                    if BridgeID == 0:
+                        MaintenanceRate00 = MaintenanceRate
+                    elif BridgeID == 1:
+                        MaintenanceRate01 = MaintenanceRate
+                    else:
+                        MaintenanceRate02 = MaintenanceRate
+
                     ListMaintenanceRates.append(MaintenanceRate)
 
                 # ListMaintenanceRatesCoded=set(ListMaintenanceRates)
@@ -120,10 +130,11 @@ class Roads():
                                                                                         Simulatingtime, warm_up,
                                                                                         RehabFullCost, MaintenanceCost,
                                                                                         AvailCoeff)
-                lst_dic1.append({'subnet': Subnet, 'sim_run': sim_run, 'BridgeID': BridgeID,
+                lst_dic1.append({'subnet': Subnet, 'sim_run': sim_run, 'NumBrdg': NumBrdg,
                                  'ListMaintenanceRates': ListMaintenanceRates,
                                  'ListMaintenanceRatesCoded': ListMaintenanceRatesCoded, 'Edge': Edge,
-                                 'Avail': TotalAva, 'TotalCost': TotalCost})
+                                 'Avail': TotalAva, 'TotalCost': TotalCost, 'bridge1Rate': MaintenanceRate00,
+                                 'bridge2Rate': MaintenanceRate01, 'bridge3Rate': MaintenanceRate02})
         # pdAlg1BridgeLevel = pdAlg1BridgeLevel.append(lst_dic1)
         pdAlg1BridgeLevel = pd.concat([pdAlg1BridgeLevel, pd.DataFrame.from_dict(lst_dic1, orient='columns')])
         # print(TotalAva,TotalCost,time_spent,pi)
