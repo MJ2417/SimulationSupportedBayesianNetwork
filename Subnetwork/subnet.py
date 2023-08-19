@@ -43,6 +43,7 @@ class Subnetworks():
                 selDataMinCost = pdAlg2InputSample.loc[(pdAlg2InputSample[
                                                             'Edge'] == edge)]
                 term = np.sum(selDataMinCost['TotalCost'].to_list())
+                # print('kooo', type(pdAlg2InputSample), pdAlg2InputSample.columns)
                 MincostAll = min(term / OverallSample, MincostAll)
 
         selDataCostEdgeValAveragedAcrossRuns = []

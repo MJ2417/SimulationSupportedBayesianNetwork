@@ -1,0 +1,633 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-06-29"
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+#update.packages(ask = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
+#install.packages("BiocManager")
+#BiocManager::install("Rgraphviz")
+library("stats")
+library("Rgraphviz")
+#install.packages("Rgraphviz")
+#BiocManager::install("Rgraphviz")
+library("fitdistrplus")
+library("bnlearn")
+#library("bnviewer")
+library("readxl")
+library("hdrcde")
+library(gRain)
+library(stringi)
+library("greekLetters")
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+library(DiagrammeRsvg)
+library(rsvg)
+#install.packages("devtools")
+#devtools::install_github("robson-fernandes/bnviewer")
+library(bnviewer)
+```
+
+## Simulation in Python
+
+The Python files are provided in the folder at ...
+
+
+## Reading CSV files
+
+Here is the code for reading csv files as data-frames:
+
+
+```{r chunk0001, echo = TRUE}
+rm(list=ls())
+#setwd("C://Users//20204066//Box//RESS-format//2022Dec10-RunFullmodel//18December2022SSBN4RYesting//")
+getwd()
+Road_cond_tables<-read.csv("conditional_prob_table_road_level_concate01.csv",sep = ",",2)
+Subset_cond_tables<-read.csv("conditional_prob_table_road_to_subnet_level_concate01.csv",sep = ",",2)
+System_cond_tables<-read.csv("conditional_prob_table_system_level.csv", sep=",",2)
+```
+
+
+With probability 0.6 is the first element of ordered "Maint_rate_IndepenVarLvel_uniq", and 0.4 the other element.
+
+
+
+```{r chunk00015, echo = TRUE}
+Bridge_road_list<-unique(Road_cond_tables$IndepenVar)
+BNString<-""
+BNString22<-""
+CPString<-""
+Bridge_lists_all<-list()
+
+ii_end<-length(Bridge_road_list)
+for (ii in 1:ii_end){
+  if (nchar(Bridge_road_list[ii]) > 1)
+    {
+    BNString<-paste0(BNString, "[", paste(Bridge_road_list[ii],sep = "") ,"]")
+    DepenVar<-Road_cond_tables[Road_cond_tables$IndepenVar==Bridge_road_list[ii],"DepenVar"]
+    DepenVar_list<-unique(DepenVar)
+    #for (jj in 1:length(DepenVar_list)){
+    #  BNString22<-paste0(BNString22, "[", paste(DepenVar_list[jj],sep = "") , "|", paste(Bridge_road_list[ii],sep     # = "")  ,"]")}
+    
+      
+    Bridge_lists_all<-append(Bridge_lists_all,Bridge_road_list[ii])
+    
+    
+    Maint_rate_IndepenVarLvel<-Road_cond_tables[Road_cond_tables$IndepenVar==Bridge_road_list[ii],"IndepenVarLvel"]
+    Maint_rate_IndepenVarLvel_uniq<-sort(unique(Maint_rate_IndepenVarLvel))
+    Maint_rate_IndepenVarLvel_uniq_index<-seq_along(Maint_rate_IndepenVarLvel_uniq)
+    str2<-paste(Bridge_road_list[ii],sep = "")
+  
+    assign(as.vector(paste(str2,"_range",sep="")),eval(parse(text=paste("Maint_rate_IndepenVarLvel_uniq_index"))))
+
+      
+    assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(c(0.6, 0.4), dim = length(Maint_rate_IndepenVarLvel_uniq), dimnames = list(",str2,"= Maint_rate_IndepenVarLvel_uniq_index))"))) )
+  
+    
+    
+    CPString<-paste0(CPString,str2,"=",paste(str2,'_prob,',sep=""))
+    
+    }
+}
+
+
+
+Bridge_road_list<-unique(Road_cond_tables$IndepenVar1)
+ii_end<-length(Bridge_road_list)
+for (ii in 1:ii_end){
+  if (nchar(Bridge_road_list[ii]) > 1)
+    {
+    BNString<-paste0(BNString, "[", paste(Bridge_road_list[ii],sep = "") ,"]")
+    DepenVar<-Road_cond_tables[Road_cond_tables$IndepenVar1==Bridge_road_list[ii],"DepenVar"]
+    DepenVar_list<-unique(DepenVar)
+
+    
+    
+    
+    Bridge_lists_all<-append(Bridge_lists_all,Bridge_road_list[ii])
+    
+    
+    Maint_rate_IndepenVarLvel<-Road_cond_tables[Road_cond_tables$IndepenVar1==Bridge_road_list[ii],"IndepenVar1Lvel"]
+    Maint_rate_IndepenVarLvel_uniq<-sort(unique(Maint_rate_IndepenVarLvel))
+    Maint_rate_IndepenVarLvel_uniq_index<-seq_along(Maint_rate_IndepenVarLvel_uniq)
+    str2<-paste(Bridge_road_list[ii],sep = "")
+  
+    assign(as.vector(paste(str2,"_range",sep="")),eval(parse(text=paste("Maint_rate_IndepenVarLvel_uniq_index"))))
+  
+    assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(c(0.6, 0.4), dim = length(Maint_rate_IndepenVarLvel_uniq), dimnames = list(",str2,"= Maint_rate_IndepenVarLvel_uniq_index))"))) )
+
+    
+
+    
+    CPString<-paste0(CPString,str2,"=",paste(str2,'_prob,',sep=""))
+
+              
+    }
+}
+
+
+
+
+
+Bridge_road_list<-unique(Road_cond_tables$IndepenVar2)
+ii_end<-length(Bridge_road_list)
+for (ii in 1:ii_end){
+  if (nchar(Bridge_road_list[ii]) > 1)
+    {
+    BNString<-paste0(BNString, "[", paste(Bridge_road_list[ii],sep = "") ,"]")
+    DepenVar<-Road_cond_tables[Road_cond_tables$IndepenVar2==Bridge_road_list[ii],"DepenVar"]
+    DepenVar_list<-unique(DepenVar)
+
+    
+    
+    Bridge_lists_all<-append(Bridge_lists_all,Bridge_road_list[ii])
+    
+    
+    Maint_rate_IndepenVarLvel<-Road_cond_tables[Road_cond_tables$IndepenVar2==Bridge_road_list[ii],"IndepenVar2Lvel"]
+    Maint_rate_IndepenVarLvel_uniq<-sort(unique(Maint_rate_IndepenVarLvel))
+    Maint_rate_IndepenVarLvel_uniq_index<-seq_along(Maint_rate_IndepenVarLvel_uniq)
+    str2<-paste(Bridge_road_list[ii],sep = "")
+  
+    assign(as.vector(paste(str2,"_range",sep="")),eval(parse(text=paste("Maint_rate_IndepenVarLvel_uniq_index"))))
+  
+    assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(c(0.6, 0.4), dim = length(Maint_rate_IndepenVarLvel_uniq), dimnames = list(",str2,"= Maint_rate_IndepenVarLvel_uniq_index))"))) )
+    # array(Maint_rate_IndepenVarLvel_uniq 
+
+    CPString<-paste0(CPString,str2,"=",paste(str2,'_prob,',sep=""))
+        
+      
+    }
+}
+
+
+
+
+
+
+
+
+
+```
+
+
+
+## Continue
+
+```{r chunk00016, echo = TRUE}
+
+
+
+Raod_list_BNString<-unique(Road_cond_tables$DepenVar)
+for (ii in 1:length(Raod_list_BNString)){
+    IndepenVar<-unique(Road_cond_tables[Road_cond_tables$DepenVar==Raod_list_BNString[ii],"IndepenVar"])
+    IndepenVar1<-unique(Road_cond_tables[Road_cond_tables$DepenVar==Raod_list_BNString[ii],"IndepenVar1"])
+    IndepenVar2<-unique(Road_cond_tables[Road_cond_tables$DepenVar==Raod_list_BNString[ii],"IndepenVar2"])
+
+    if (nchar(IndepenVar1) > 1 & nchar(IndepenVar2) > 1){    
+    BNString22<-paste0(BNString22, "[", paste(Raod_list_BNString[ii],sep = "") , "|", paste(IndepenVar,":",IndepenVar1,":",IndepenVar2,sep = "")  ,"]")
+    }
+    else if (nchar(IndepenVar1) > 1){  
+    BNString22<-paste0(BNString22, "[", paste(Raod_list_BNString[ii],sep = "") , "|", paste(IndepenVar,":",IndepenVar1,sep = "")  ,"]")
+    
+    }
+    else {
+    BNString22<-paste0(BNString22, "[", paste(Raod_list_BNString[ii],sep = "") , "|", paste(IndepenVar,sep = "")  ,"]")
+      
+    }
+  }
+
+
+Road_list<-unique(Road_cond_tables$DepenVar)
+Road_lists_all<-list()
+
+
+for (ii in 1:length(Road_list)){
+  if (nchar(Road_list[ii]) > 1)
+    {
+
+    #BNString<-paste0(BNString, "[", paste(Road_list[ii],sep = "") ,"]")
+    Road_lists_all<-append(Road_lists_all,Road_list[ii])
+    
+    
+    Road_cond_prob<-Road_cond_tables[Road_cond_tables$DepenVar==Road_list[ii],"CondProb"]
+    Road_levels_list<-Road_cond_tables[Road_cond_tables$DepenVar==Road_list[ii],"DepenVarLvel"]
+    Road_levels_list_index<-seq_along(unique(Road_levels_list))
+    Road_levels_list_num<-length(unique(Road_levels_list))
+    
+
+    IndepenVar<-unique(Road_cond_tables[Road_cond_tables$DepenVar==Road_list[ii],"IndepenVar"])
+    IndepenVar_uniq_num<-length(unique(Road_cond_tables[Road_cond_tables$DepenVar==Road_list[ii],"IndepenVarLvel"]))
+    IndepenVar1<-unique(Road_cond_tables[Road_cond_tables$DepenVar==Road_list[ii],"IndepenVar1"])
+    IndepenVar1_uniq_num<-length(unique(Road_cond_tables[Road_cond_tables$DepenVar==Road_list[ii],"IndepenVar1Lvel"]))
+    IndepenVar2<-unique(Road_cond_tables[Road_cond_tables$DepenVar==Road_list[ii],"IndepenVar2"])
+    IndepenVar2_uniq_num<-length(unique(Road_cond_tables[Road_cond_tables$DepenVar==Road_list[ii],"IndepenVar2Lvel"]))
+
+        
+    str2<-paste(Road_list[ii],sep = "")
+    str3<-paste(IndepenVar,"=",IndepenVar,"_range",sep = "")
+    str4<-paste(IndepenVar1,"=",IndepenVar1,"_range",sep = "")
+    str5<-paste(IndepenVar2,"=",IndepenVar2,"_range",sep = "")
+
+    assign(as.vector(paste(str2,"_range",sep="")),eval(parse(text=paste("Road_levels_list_index"))))
+    
+    #cat(IndepenVar2_uniq_num,'IndepenVar2_uniq_num')
+
+        
+
+    if (nchar(IndepenVar1) > 1 & nchar(IndepenVar2) > 1){
+
+      # rr<-paste("arrayRoad_cond_prob, dim = c(Road_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num,IndepenVar2_uniq_num ), dimnames = list(",str2,"= Road_levels_list_index,",str3,str4,str5,"))")
+      #print(rr)
+      
+      assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(Road_cond_prob, dim = c(Road_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num,IndepenVar2_uniq_num ), dimnames = list(",str2,"= Road_levels_list_index,",str3,",",str4,",",str5,"))"))) )
+    }
+        
+
+    else if (nchar(IndepenVar1) > 1){
+
+      assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(Road_cond_prob, dim = c(Road_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num ), dimnames = list(",str2,"= Road_levels_list_index,",str3,",",str4,"))"))) )
+    }
+     else {
+      assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(Road_cond_prob, dim = c(Road_levels_list_num,IndepenVar_uniq_num ), dimnames = list(",str2,"= Road_levels_list_index,",str3,"))"))) )
+       
+     }   
+
+    if (ii <=length(Road_list) ){
+      CPString<-paste0(CPString,str2,"=",paste(str2,'_prob,',sep=""))}
+    else {
+      CPString<-paste0(CPString,str2,"=",paste(str2,'_prob',sep=""))
+    }
+    
+    }
+}
+
+
+
+
+```
+
+
+Read and create subnet file..
+
+```{r chunk00017, echo = TRUE}
+BNString22
+Subnet_list_BNString<-unique(Subset_cond_tables$DepenVar)
+for (ii in 1:length(Subnet_list_BNString)){
+
+    IndepenVar<-unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list_BNString[ii],"IndepenVar"])
+    IndepenVar1<-unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list_BNString[ii],"IndepenVar1"])
+    IndepenVar2<-unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list_BNString[ii],"IndepenVar2"])
+    IndepenVar3<-unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list_BNString[ii],"IndepenVar3"])
+
+    if (nchar(IndepenVar1) > 1 & nchar(IndepenVar2) > 1  & nchar(IndepenVar3) > 1){    
+    BNString22<-paste0(BNString22, "[", paste(Subnet_list_BNString[ii],sep = "") , "|", paste(IndepenVar,":",IndepenVar1,":",IndepenVar2,":",IndepenVar3,sep = "")  ,"]")
+    }
+    else if (nchar(IndepenVar1) > 1 & nchar(IndepenVar2) > 1){    
+    BNString22<-paste0(BNString22, "[", paste(Subnet_list_BNString[ii],sep = "") , "|", paste(IndepenVar,":",IndepenVar1,":",IndepenVar2,sep = "")  ,"]")
+    }
+    else if (nchar(IndepenVar1) > 1){  
+    BNString22<-paste0(BNString22, "[", paste(Subnet_list_BNString[ii],sep = "") , "|", paste(IndepenVar,":",IndepenVar1,sep = "")  ,"]")
+    
+    }
+    else {
+    BNString22<-paste0(BNString22, "[", paste(Subnet_list_BNString[ii],sep = "") , "|", paste(IndepenVar,sep = "")  ,"]")
+      
+    }
+  }
+
+
+
+
+Subnet_list<-unique(Subset_cond_tables$DepenVar)
+Subnet_lists_all<-list()
+
+
+
+for (ii in 1:length(Subnet_list)){
+  if (nchar(Subnet_list[ii]) > 1  )
+    {
+
+    #BNString<-paste0(BNString, "[", paste(Road_list[ii],sep = "") ,"]")
+    Subnet_lists_all<-append(Subnet_lists_all,Subnet_list[ii])
+    
+    
+    Subnet_cond_prob<-Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"CondProb"]
+    Subnet_levels_list<-Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"DepenVarLvel"]
+    Subnet_levels_list_index<-seq_along(unique(Subnet_levels_list))
+    Subnet_levels_list_num<-length(unique(Subnet_levels_list))
+    
+
+    
+
+    IndepenVar<-unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"IndepenVar"])
+    IndepenVar_uniq_num<-length(unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"IndepenVarLvel"]))
+    IndepenVar1<-unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"IndepenVar1"])
+    IndepenVar1_uniq_num<-length(unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"IndepenVar1Lvel"]))
+    IndepenVar2<-unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"IndepenVar2"])
+    IndepenVar2_uniq_num<-length(unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"IndepenVar2Lvel"]))
+    IndepenVar3<-unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"IndepenVar3"])
+    IndepenVar3_uniq_num<-length(unique(Subset_cond_tables[Subset_cond_tables$DepenVar==Subnet_list[ii],"IndepenVar3Lvel"]))
+
+        
+    str2<-paste(Subnet_list[ii],sep = "")
+    str3<-paste(IndepenVar,"=",IndepenVar,"_range",sep = "")
+    str4<-paste(IndepenVar1,"=",IndepenVar1,"_range",sep = "")
+    str5<-paste(IndepenVar2,"=",IndepenVar2,"_range",sep = "")
+    str6<-paste(IndepenVar3,"=",IndepenVar3,"_range",sep = "")
+    assign(as.vector(paste(str2,"_range",sep="")),eval(parse(text=paste("Subnet_levels_list_index"))))
+
+    #cat("    %%%%%%%%%%  ",ii)
+    #cat("::::", IndepenVar_uniq_num, IndepenVar1_uniq_num, Subnet_levels_list_num)
+    #cat("uuuuuuuuuuu")
+    
+
+    if (nchar(IndepenVar1) > 1 & nchar(IndepenVar2) > 1 & nchar(IndepenVar3) > 1){
+
+     # rr<-paste("array(Subnet_cond_prob, dim = c(Subnet_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num, IndepenVar2_uniq_num, IndepenVar3_uniq_num ), dimnames = list(",str2,"= Subnet_levels_list_index,",str3,",",str4,",",str5,",",str6,"))")
+      # print(rr)
+
+            
+      assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(Subnet_cond_prob, dim = c(Subnet_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num,IndepenVar2_uniq_num,IndepenVar3_uniq_num ), dimnames = list(",str2,"= Subnet_levels_list_index,",str3,",",str4,",",str5,",",str6,"))"))) )
+    }
+
+    else if (nchar(IndepenVar1) > 1 & nchar(IndepenVar2) > 1){
+
+      # rr<-paste("array(Subnet_cond_prob, dim = c(Subnet_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num, IndepenVar2_uniq_num ), dimnames = list(",str2,"= Subnet_levels_list_index,",str3,",",str4,",",str5,"))")
+      # print(rr)
+
+            
+      assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(Subnet_cond_prob, dim = c(Subnet_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num,IndepenVar2_uniq_num ), dimnames = list(",str2,"= Subnet_levels_list_index,",str3,",",str4,",",str5,"))"))) )
+    }
+        
+
+    else if (nchar(IndepenVar1) > 1){
+
+      #rr<-paste("array(Subnet_cond_prob, dim = c(Subnet_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num ), dimnames = list(",str2,"= Subnet_levels_list_index,",str3,",",str4,"))")
+      #print(rr)
+      
+      assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(Subnet_cond_prob, dim = c(Subnet_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num ), dimnames = list(",str2,"= Subnet_levels_list_index,",str3,",",str4,"))"))) )
+    }
+     else {
+      assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(Subnet_cond_prob, dim = c(Subnet_levels_list_num,IndepenVar_uniq_num ), dimnames = list(",str2,"= Subnet_levels_list_index,",str3,"))"))) )
+       
+     }   
+
+    if (ii <=length(Subnet_list) ){
+      CPString<-paste0(CPString,str2,"=",paste(str2,'_prob,',sep=""))}
+    else {
+      CPString<-paste0(CPString,str2,"=",paste(str2,'_prob',sep=""))
+    }
+    
+    }
+}
+
+
+
+
+```
+
+
+
+system nodes and conditional probs
+
+```{r chunk00018, echo = TRUE}
+
+Sys_list_BNString<-unique(System_cond_tables$DepenVar)
+
+for (ii in 1:length(Sys_list_BNString)){
+    IndepenVar<-unique(System_cond_tables[System_cond_tables$DepenVar==Sys_list_BNString[ii],"IndepenVar"])
+    IndepenVar1<-unique(System_cond_tables[System_cond_tables$DepenVar==Sys_list_BNString[ii],"IndepenVar1"])
+    IndepenVar2<-unique(System_cond_tables[System_cond_tables$DepenVar==Sys_list_BNString[ii],"IndepenVar2"])
+    IndepenVar3<-unique(System_cond_tables[System_cond_tables$DepenVar==Sys_list_BNString[ii],"IndepenVar3"])
+
+    if (nchar(IndepenVar1) > 1 & nchar(IndepenVar2) > 1  & nchar(IndepenVar3) > 1){    
+    BNString22<-paste0(BNString22, "[", paste(Sys_list_BNString[ii],sep = "") , "|", paste(IndepenVar,":",IndepenVar1,":",IndepenVar2,":",IndepenVar3,sep = "")  ,"]")
+    }
+    else if (nchar(IndepenVar1) > 1 & nchar(IndepenVar2) > 1){    
+    BNString22<-paste0(BNString22, "[", paste(Sys_list_BNString[ii],sep = "") , "|", paste(IndepenVar,":",IndepenVar1,":",IndepenVar2,sep = "")  ,"]")
+    }
+    else if (nchar(IndepenVar1) > 1){  
+    BNString22<-paste0(BNString22, "[", paste(Sys_list_BNString[ii],sep = "") , "|", paste(IndepenVar,":",IndepenVar1,sep = "")  ,"]")
+    
+    }
+    else {
+    BNString22<-paste0(BNString22, "[", paste(Sys_list_BNString[ii],sep = "") , "|", paste(IndepenVar,sep = "")  ,"]")
+      
+    }
+  }
+
+
+
+System_var_list<-unique(System_cond_tables$DepenVar)
+System_var_lists_all<-list()
+
+
+for (ii in 1:length(System_var_list)){
+  if (nchar(System_var_list[ii]) > 1  )
+    {
+
+    #BNString<-paste0(BNString, "[", paste(Road_list[ii],sep = "") ,"]")
+    System_var_lists_all<-append(System_var_lists_all,System_var_list[ii])
+    
+    
+    System_cond_prob<-System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"CondProb"]
+    System_var_levels_list<-System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"DepenVarLvel"]
+    System_var_levels_list_index<-seq_along(unique(System_var_levels_list))
+    System_var_levels_list_num<-length(unique(System_var_levels_list))
+    
+    IndepenVar_uniq_num<-length(unique(System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"IndepenVarLvel"]))
+    IndepenVar1_uniq_num<-length(unique(System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"IndepenVar1Lvel"]))
+    IndepenVar2_uniq_num<-length(unique(System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"IndepenVar2Lvel"]))
+    IndepenVar3_uniq_num<-length(unique(System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"IndepenVar3Lvel"]))
+
+    
+
+    IndepenVar<-unique(System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"IndepenVar"])
+    IndepenVar1<-unique(System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"IndepenVar1"])
+    IndepenVar2<-unique(System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"IndepenVar2"])
+    IndepenVar3<-unique(System_cond_tables[System_cond_tables$DepenVar==System_var_list[ii],"IndepenVar3"])
+
+        
+    str2<-paste(System_var_list[ii],sep = "")
+    str3<-paste(IndepenVar,"=",IndepenVar,"_range",sep = "")
+    str4<-paste(IndepenVar1,"=",IndepenVar1,"_range",sep = "")
+    str5<-paste(IndepenVar2,"=",IndepenVar2,"_range",sep = "")
+    str6<-paste(IndepenVar3,"=",IndepenVar3,"_range",sep = "")
+
+    #cat("    %%%%%%%%%%  ",ii)
+    #cat("::::", IndepenVar_uniq_num, IndepenVar1_uniq_num, Subnet_levels_list_num)
+    #cat("uuuuuuuuuuu")
+    
+
+
+    rr<-paste("array(System_cond_tables, dim = c(System_var_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num, IndepenVar2_uniq_num, IndepenVar3_uniq_num ), dimnames = list(",str2,"= System_var_levels_list_index,",str3,",",str4,",",str5,",",str6,"))")
+    print(rr)
+
+            
+      assign(as.vector(paste(str2,'_prob',sep="")),eval(parse(text=paste("array(System_cond_prob, dim = c(System_var_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num,IndepenVar2_uniq_num,IndepenVar3_uniq_num ), dimnames = list(",str2,"= System_var_levels_list_index,",str3,",",str4,",",str5,",",str6,"))"))) )
+
+    if (ii <length(System_var_list) ){
+      CPString<-paste0(CPString,str2,"=",paste(str2,'_prob,',sep=""))}
+    else {
+      CPString<-paste0(CPString,str2,"=",paste(str2,'_prob',sep=""))
+    }
+    
+    }
+}
+
+
+# System_cond_prob<-System_cond_tables[System_cond_tables$DepenVar==System_var_list[1],"CondProb"]
+# System_var_levels_list<-System_cond_tables[System_cond_tables$DepenVar==System_var_list[1],"DepenVarLvel"]
+# System_var_levels_list_index<-seq_along(unique(System_var_levels_list))
+# System_var_levels_list_num<-length(unique(System_var_levels_list))
+# 
+# System_var_levels_list_index
+# c(System_var_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num, IndepenVar2_uniq_num, IndepenVar3_uniq_num )
+# list( TotalCostDisc11 = System_var_levels_list_index, Subnet0Costs=Subnet0Costs_range , Subnet1Costs=Subnet1Costs_range , Subnet2Costs=Subnet2Costs_range , Subnet3Costs=Subnet3Costs_range )
+# tte<-array(System_cond_tables, dim = c(System_var_levels_list_num,IndepenVar_uniq_num,IndepenVar1_uniq_num, IndepenVar2_uniq_num, IndepenVar3_uniq_num ), dimnames = list( TotalCostDisc11 = System_var_levels_list_index, Subnet0Costs=Subnet0Costs_range , Subnet1Costs=Subnet1Costs_range , Subnet2Costs=Subnet2Costs_range , Subnet3Costs=Subnet3Costs_range ))
+
+
+```
+
+
+
+
+Creat BN model
+
+```{r chunk00019, echo=FALSE, fig.asp=.62, fig.width=55,  dev='png', fig.show='hide'}
+CPString#<-"Bridge0Road13=Bridge0Road13_prob,Road13Avail=Road13Avail_prob"
+assign(as.vector(paste('cpt',sep="")),eval(parse(text=paste("list(",CPString,")"))) )
+cpt
+BNString22
+
+#BNStringAll<-paste0("[Bridge0Road13]",BNString22,"")
+BNStringAll<-paste0(BNString,BNString22,"")
+BNStringAll
+BNLayerOneTime = model2network(BNStringAll)
+cpt
+
+
+bn11 = custom.fit(BNLayerOneTime, cpt)
+bn.to.igraph(bn11)
+
+
+data("alarm")
+bayesianNetwork = hc(alarm)
+
+
+viewer(BNLayerOneTime,
+	bayesianNetwork.width = "150%",
+	bayesianNetwork.height = "80vh",
+	bayesianNetwork.layout = "layout_components",
+	bayesianNetwork.title="Los Angeles County",
+	bayesianNetwork.subtitle = "Bridge Network",
+	bayesianNetwork.footer = "Fig. 1 - Layout with Sugiyama",
+	edges.width = 4,
+	node.shape = "ellipse"
+)
+
+
+set.seed(1)
+
+result_inf1<-replicate (100,cpquery(bn11, event =  (TravelTimeDisc11 == 1) | (TravelTimeDisc11 == 0)  , evidence = ( (Bridge0Road13 == 1) & (Bridge0Road49 == 1) & (Bridge0Road57 == 1) & (Bridge0Road63 == 1)),n=10000))
+summary(result_inf1)
+result_inf1 <- as.numeric(result_inf1)
+#hist(result_inf1)
+#typeof(result_inf1)
+ggplot() + geom_histogram(aes(result_inf1), bins = 15)
+
+
+
+
+result_inf1<-replicate (100,cpquery(bn11, event =  (TravelTimeDisc11 == 1) | (TravelTimeDisc11 == 0)  , evidence = ( (Bridge0Road13 == 2) & (Bridge0Road49 == 2) & (Bridge0Road57 == 2) & (Bridge0Road63 == 2)),n=10000))
+summary(result_inf1)
+result_inf1 <- as.numeric(result_inf1)
+ggplot() + geom_histogram(aes(result_inf1), bins = 15)
+
+
+
+```
+
+## Here till hereeeeeeeeeeeeeeeeeeeee
+
+
+```{r}
+
+#graphviz.chart(bn11, type = "barprob",scale = c(2.8, 2.5), grid = TRUE, bar.col = "darkgreen",strip.bg = "white")
+#graphviz.chart(bn11,  type = "barprob", layout = "dot")
+#par(mar=rep(0,4))
+graphics.off()
+dev.new()
+#par("mar")
+par(mar=c(0.1,0.1,0.1,0.1))#par(mar = c(1, 1, 1, 1))
+#par(mfcol=c(10,3),mai=c(0.5,0.5,0.5,0))
+#par(cex=0.05)#,mai=c(0.1,0.1,0.1,0.1))
+
+graphviz.chart(bn11, type = "barprob",scale = c(2.8, 2.5), grid = TRUE, bar.col = "darkgreen",strip.bg = "white")
+
+reso <- 500
+#length <- 2*reso/72
+png("test13.png",10, 8, units="in",res=1000) #,height=length,width=length)
+
+#graphviz.chart(bn11,  type = "barprob", layout = "dot")
+graphviz.chart(bn11, type = "barprob",scale = c(2.8, 2.5), grid = TRUE, bar.col = "darkgreen",strip.bg = "white")
+
+#graphviz.chart(bn11, type = "barprob",scale = c(2.8, 2.5), grid = TRUE, bar.col = "darkgreen",strip.bg = "white")
+invisible(dev.off())
+#dev.set(dev.next())
+
+
+#http://robsonfernandes.net/bnviewer/
+# https://cran.r-project.org/web/packages/bnviewer/bnviewer.pdf
+
+
+
+graphviz.chart(bn11, type = "barprob",scale = c(2.8, 2.5), grid = TRUE, bar.col = "darkgreen",strip.bg = "white")
+
+graphviz.plot(bn11, layout = "fdp") #circo
+
+
+bn.fit.barchart(bn11$Road57Costs, main = "Subnet3Costs",
+                xlab = "Pr(Subnet3Costs |..)", ylab = "")
+
+graphviz.plot(bn11, shape = "ellipse")
+
+par(mar=rep(0,4))
+graphviz.chart(bn11, type = "barprob", layout = "dot")
+par(cex=0.05)
+graphviz.chart(bn11,  type = "barprob", layout = "dot")
+typeof(gg)
+export_graph(gg,
+file_name = "29JuneBN11.png",
+file_type = "png")
+#https://www.bnlearn.com/examples/graphviz-plot/
+export_graph(ToDiagrammeRGraph(gg), "export.pdf")
+#Distribution here 
+
+
+```
+
+
+## Here 1
+
+```{r fig3, fig.width = 55, fig.asp = .62}
+#https://github.com/robson-fernandes/bnviewer
+packageVersion("rlang") # ‘1.0.6’
+devtools::install_github("r-lib/rlang")
+packageVersion("rlang") # ‘1.1.0.9000’
+install.packages("rlang", version="1.1.0")
+
+#update.packages(ask = FALSE)
+install.packages("devtools")
+devtools::install_github("robson-fernandes/bnviewer")
+library(bnviewer)
+par(cex=0.05)
+graphviz.chart(bn11, type = "barprob")
+```
+
+
+

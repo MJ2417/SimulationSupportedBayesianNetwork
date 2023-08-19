@@ -11,8 +11,8 @@ import warnings
 
 # warnings.filterwarnings('ignore')
 
-os.environ["R_HOME"] = r"C:\Program Files\R\R-4.2.1"
-os.environ["PATH"] = r"C:\Program Files\R\R-4.2.1\bin\x64" + ";" + os.environ["PATH"]
+os.environ["R_HOME"] = r"C:\Program Files\R\R-4.3.1"
+os.environ["PATH"] = r"C:\Program Files\R\R-4.3.1\bin\x64" + ";" + os.environ["PATH"]
 from rpy2.robjects import numpy2ri, pandas2ri
 from datetime import datetime
 
@@ -39,7 +39,9 @@ subnetwork_instance = Subnetworks()
 system_instance = SystemAll()
 discretization_instance = Discretization()
 conditional_tables_instance = ConditionalTables()
-resultsPath = 'C:\\Users\\Mohsen\\Documents\\PythonProjects\\Opac\\OutputResultsValidation\\'
+# resultsPath = 'C:\\Users\\Mohsen\\Documents\\PythonProjects\\Opac\\OutputResultsValidation\\'
+resultsPath = 'C:\\Users\\Mohsen\\Documents\\PythonProjects\\Opac\\OutputResults29June2023V06disc5SimVal\\'
+
 for Subnet in range(1, 5, 1):
     '''
     define dataframes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,16 +75,22 @@ for Subnet in range(1, 5, 1):
                                                                           Simulatingtime, warm_up, RehabFullCost,
                                                                           MaintenanceCost,
                                                                           AvailCoeff)
-    df_algorithm2_input_sample = roads_instance.inputs_algorithm2_simulation_validation(resultsPath,
-                                                                                        df_algorithm1_bridge_level,
-                                                                                        df_algorithm2_input_sample,
-                                                                                        measure_list,
-                                                                                        edge_with_bridges_list,
-                                                                                        EdgeNumWithBridges, Subnet,
-                                                                                        OverallSample, PlotDist)
+    # df_algorithm2_input_sample = roads_instance.inputs_algorithm2_simulation_validation(resultsPath,
+    #                                                                                     df_algorithm1_bridge_level,
+    #                                                                                     df_algorithm2_input_sample,
+    #                                                                                     measure_list,
+    #                                                                                     edge_with_bridges_list,
+    #                                                                                     EdgeNumWithBridges, Subnet,
+    #                                                                                     OverallSample, PlotDist)
+
+    df_algorithm2_input_sample = roads_instance.sampling_inputs_algorithm2(resultsPath, df_algorithm1_bridge_level,
+                                                                           df_algorithm2_input_sample,
+                                                                           measure_list, edge_with_bridges_list,
+                                                                           EdgeNumWithBridges, Subnet,
+                                                                           OverallSample, PlotDist, n_sample)
 
     # Inputs of third algorithm
-    print(len(df_algorithm2_input_sample))
+    # print('looo',len(df_algorithm2_input_sample))
     df_algorithm2_output = subnetwork_instance.simulate_algorithm2_output_generation(Subnet, EdgeAll,
                                                                                      edge_with_bridges_list,
                                                                                      EdgeListWithBridgesShortDis,

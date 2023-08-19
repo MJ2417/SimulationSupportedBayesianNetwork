@@ -11,8 +11,8 @@ import warnings
 
 # warnings.filterwarnings('ignore')
 
-os.environ["R_HOME"] = r"C:\Program Files\R\R-4.2.2"
-os.environ["PATH"] = r"C:\Program Files\R\R-4.2.2\bin\x64" + ";" + os.environ["PATH"]
+os.environ["R_HOME"] = r"C:\Program Files\R\R-4.3.1"
+os.environ["PATH"] = r"C:\Program Files\R\R-4.3.1\bin\x64" + ";" + os.environ["PATH"]
 from rpy2.robjects import numpy2ri, pandas2ri
 from datetime import datetime
 
