@@ -6,23 +6,11 @@ from rpy2.robjects import numpy2ri, pandas2ri
 
 numpy2ri.activate()
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 plt.rcParams["font.family"] = "serif"
 os.getcwd()
-import copy
-import networkx as nx
-import scipy as sp
-import numpy as np
-import tkinter as tk
-from tkinter import filedialog
-import pandas as pd
-from matplotlib import rc
-# from Functions11 import Functions
-from scipy.spatial import distance as dist
-from random import seed
-#from Network import *
-from scipy.stats import beta
-from itertools import product, combinations, combinations_with_replacement
 
 
 ###############CharacterizeSubnet
@@ -76,6 +64,38 @@ class Network:
 
         return size
 
+    def LeftOverRoadsTravelTime(self):
+        TravelTimeGenerated = 0.0
+        for leftoverroads_id in range(1, 9, 1):
+            if leftoverroads_id == 1:
+                TravelTime = [2, 3]
+                Probs = [0.6, 0.4]
+            elif leftoverroads_id == 2:
+                TravelTime = [3, 5]
+                Probs = [0.7, 0.3]
+            elif leftoverroads_id == 3:
+                TravelTime = [3, 6]
+                Probs = [0.5, 0.5]
+            elif leftoverroads_id == 4:
+                TravelTime = [3, 4]
+                Probs = [0.6, 0.4]
+            elif leftoverroads_id == 5:
+                TravelTime = [5, 8]
+                Probs = [0.4, 0.6]
+            elif leftoverroads_id == 6:
+                TravelTime = [7, 9]
+                Probs = [0.8, 0.2]
+            elif leftoverroads_id == 7:
+                TravelTime = [2, 4]
+                Probs = [0.5, 0.5]
+            else:
+                TravelTime = [2, 3]
+                Probs = [0.45, 0.55]
+
+            TravelTimeGenerated += np.random.choice(TravelTime, 1, p=Probs)
+
+        return TravelTimeGenerated[0]
+
     def EdgesWithBridgesofSubnetwork(self, subnetwork):
         EdgeListWithBridges = []
         if subnetwork == 1:
@@ -92,7 +112,7 @@ class Network:
     def CharacterizeSubnet(self, subnet):
         if subnet == 1:
             EdgeAll = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 40, 67, 68]
-            print(EdgeAll.index(8))
+            # print(EdgeAll.index(8))
             EdgeListWithBridges = [13, 40]
             EdgeListWithBridgesShortDis = [[13, 40, 1]]
             EdgesWithTraffic = [67, 68]
@@ -101,7 +121,7 @@ class Network:
             EdgesWithTrafficOtherTime = [3, 5]
             BridgeRoadMat = [[1, -1, -1], [0, 0, 0]]  # [[0,0,-1],[1,-1,-1],[0,-1,-1],[1,-1,-1]]
             EdgeNumWithBridges = len(BridgeRoadMat)
-            print('numbridge', EdgeNumWithBridges)
+            # print('numbridge', EdgeNumWithBridges)
             TurningMat = [[0, 0.5, 0.22, 0.28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0.64, 0, 0, 0, 0.36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0.31, 0, 0, 0.19, 0, 0.12, 0.1, 0, 0, 0, 0, 0, 0, 0.28, 0],
@@ -135,8 +155,6 @@ class Network:
                              [0, 0, 0, 0, 0, 0, 0.28, 0, 0, 0, 0.35, 0.37, 0, 0, 0]
                              ]
             TravelingTimeEdge = [1, 8, 3, 1, 3, 1, 5, 2, 4, 9, 5, 12, 12, 2, 3]
-            print('ii')
-            print(TurningMat)
         if subnet == 2:
             # TurningMatMod=TurningMat
             EdgeAll = [6, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 37, 48, 49, 73, 74]
@@ -230,7 +248,6 @@ class Network:
                                            header=None)  # read_excel('Subnetwork4-turningprob.xlsx')
             # TurningMatPandas=TurningMatPandas.mask(np.isinf(TurningMatPandas))#.replace(np.nan,0)#fillna(0)
             # TurningMatPandas.replace(np.nan,0)
-            print(TurningMatPandas)
             TurningMatPandas.to_csv('Subnetwork4-turningprob1.csv')
             TurningMat = [
                 [0, 0, 0, 0, 0, 0, 0, 0.28, 0, 0.36, 0.36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -312,15 +329,11 @@ class Network:
                  0.31613976705490804, 0, 0.42928452579034904, 0.254575707154742, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.43264503441494606, 0, 0.5673549655850539, 0, 0, 0,
                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                ]
+            ]
 
             # TurningMat=TurningMatPandas.values.tolist()
             TurningMatMod = TurningMat
             TravelingTimeEdge = [15, 4, 8, 2, 4, 3, 6, 7, 2, 2, 3, 4, 7, 1, 3, 1, 7, 9, 6, 2, 4, 4, 2, 5, 3, 2, 4, 4, 4,
                                  1, 4, 4, 3, 5, 7]
 
-        print(type(TurningMatMod))
-
-        # print(TurningMatMod)
-        # print(BridgeRoadMat[1]) #print(BridgeRoadMat[1][1]) #print(len(BridgeRoadMat))
         return EdgeAll, EdgeListWithBridges, EdgeListWithBridgesShortDis, EdgesWithTraffic, EdgesWithTrafficProb, EdgesWithTrafficOtherTime, BridgeRoadMat, TurningMat, TurningMatMod, TravelingTimeEdge, EdgeNumWithBridges
