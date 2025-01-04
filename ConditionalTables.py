@@ -226,7 +226,8 @@ class ConditionalTables():
                     ForLevelsselDatasimrunAsli = DataFrameAsli3[(DataFrameAsli3['DepenVar'] == MeasureO001)]
                     nDiscretiseAsli = ForLevelsselDatasimrunAsli['DepenVarLvel'].unique()
                     nDiscretiseAsli11 = list(set(nDiscretiseAsli))
-                    if inleval[edge] > max(nDiscretiseAsli11):
+                    if not (inleval[edge] in nDiscretiseAsli11): #inleval[edge] > max(nDiscretiseAsli11) - 1:
+                        #print(inleval[edge],nDiscretiseAsli11)
                         eligible = 0
 
                 if eligible:
@@ -316,7 +317,8 @@ class ConditionalTables():
                     nDiscretiseAsli = ForLevelsselDatasimrunAsli['DepenVarLvel'].unique()
                     nDiscretiseAsli11 = list(set(nDiscretiseAsli))
                     # print(MeasureO001, nDiscretiseAsli11, subnet)
-                    if inleval[subnet] > max(nDiscretiseAsli11):
+                    if not (inleval[subnet] in nDiscretiseAsli11): #> max(nDiscretiseAsli11) - 1:
+                        #print(inleval[subnet], nDiscretiseAsli11)
                         eligible = 0
 
                 if eligible:

@@ -43,16 +43,16 @@ class Discretization():
             bins.append(LowIntAlter + www * ((HighInt - LowIntAlter) / (nDiscretiseAlter)))
             labels.append(www + 1)
         if Measure != 'Avail' and Measure != 'TravelTime':
-            bins.append(max(np.max(selData), HighInt + 200))
+            bins.append(np.inf)#max(np.max(selData), HighInt + 500, bins[len(bins)-1] + 500))
         if Measure == 'TravelTime':
-            bins.append(max(np.max(selData), HighInt + 2))
+            bins.append(max(np.max(selData), HighInt + 20, bins[len(bins)-1] + 20))
         elif Measure == 'Avail':
-            bins.append(max(np.max(selData), 1.0))
+            bins.append(max(np.max(selData), 1.0, bins[len(bins)-1]))
         Measure11 = Measure + 'Disc'
         Measure12 = Measure + 'Disc11'
         bins11 = pd.IntervalIndex.from_arrays(bins[:len(bins) - 1], bins[1:])
         # selData12=DataFrameForDis[Measure]
-        DataFrameForDis[Measure11] = pd.cut(DataFrameForDis[Measure], bins11).astype(str).str.strip(
+        DataFrameForDis[Measure11] = pd.cut(DataFrameForDis[Measure], bins11,  include_lowest=True, right=False).astype(str).str.strip(
             '()[]')  # ,labels=["1","2","3","4","5","6","7"])
         UniqBins = set(DataFrameForDis[Measure11].unique())
         key = range(len(UniqBins))
@@ -62,7 +62,8 @@ class Discretization():
 
         return DataFrameForDis, Disc11List, bins11
 
-    def discretize_data_frame_algorithm2_and_3(self, DataFrameForDis, Measure, nDiscretise):
+    ##############################################################################################
+    def discretize_data_frame_algorithm2_and_3Old(self, DataFrameForDis, Measure, nDiscretise):
         selData00 = DataFrameForDis[Measure]
         selData11 = selData00.to_numpy()
         selData = np.asmatrix(
@@ -89,10 +90,55 @@ class Discretization():
         if Measure == 'TravelTime':
             bins.append(max(np.max(selData), HighInt + 1))
         elif Measure == 'TotalCost':
-            bins.append(max(np.max(selData), HighInt + 10))
+            bins.append(max(np.max(selData), HighInt + 50))
         Measure11 = Measure + 'Disc'
         Measure12 = Measure + 'Disc11'
         bins11 = pd.IntervalIndex.from_arrays(bins[:len(bins) - 1], bins[1:])
+        DataFrameForDis[Measure11] = pd.cut(DataFrameForDis[Measure], bins11).astype(str).str.strip(
+            '()[]')  # ,labels=["1","2","3","4","5","6","7"])
+        UniqBins = set(DataFrameForDis[Measure11].unique())
+        # TODO check things ...
+        key = range(len(UniqBins))
+        Disc11List = dict(zip(sorted(list(UniqBins)), key))
+        # print('nooooomooo', sorted(list(UniqBins)))
+        # print('yesss::::::', Disc11List)
+        DataFrameForDis[Measure12] = DataFrameForDis[Measure11].map(Disc11List)
+
+        return DataFrameForDis, Disc11List, bins11
+
+    ##############################################################################################
+    def discretize_data_frame_algorithm2_and_3(self, DataFrameForDis, Measure, nDiscretise):
+        selData00 = DataFrameForDis[Measure]
+        selData11 = selData00.to_numpy()
+        selData = np.asmatrix(
+            selData11)
+        [LowInt, HighInt] = self.CalHighDensityReg(selData, 2)
+        bins = [0]
+        labels = [0]
+        lowIndex = 0
+        if LowInt <= 0 or Measure != 'TotalCost':
+            LowIntAlter = 0
+            nDiscretiseAlter = nDiscretise + 1
+            lowIndex += 1
+        else:
+            LowIntAlter = 0
+            nDiscretiseAlter = nDiscretise + 1
+            lowIndex += 1
+            # nDiscretiseAlter = nDiscretise
+            # LowIntAlter = LowInt
+        for www in range(lowIndex, nDiscretiseAlter, 1):
+            bins.append(LowIntAlter + www * ((HighInt - LowIntAlter) / nDiscretiseAlter))
+            labels.append(www + 1)
+        if Measure != 'TotalCost' and Measure != 'TravelTime':
+            bins.append(np.inf)#max(np.max(bins), HighInt + 50))
+        if Measure == 'TravelTime':
+            bins.append(max(np.max(bins), HighInt + 50))
+        elif Measure == 'TotalCost':
+            bins.append(np.inf)#max(np.max(bins), HighInt + 500))
+        Measure11 = Measure + 'Disc'
+        Measure12 = Measure + 'Disc11'
+        bins11 = pd.IntervalIndex.from_arrays(bins[:len(bins) - 1], bins[1:])
+        # print('ggghh',bins[:len(bins) - 1], bins[1:], bins11)
         DataFrameForDis[Measure11] = pd.cut(DataFrameForDis[Measure], bins11).astype(str).str.strip(
             '()[]')  # ,labels=["1","2","3","4","5","6","7"])
         UniqBins = set(DataFrameForDis[Measure11].unique())
@@ -151,7 +197,19 @@ class Discretization():
                 library("stats")
                 library("hdrcde")
                 library(stringi)
-                Intervals<-hdr(matrix,prob=0.7)
+                Intervals<-hdr(matrix,prob=0.6)
+                UpperInt<-Intervals$hdr[2]
+                LowerInt<-Intervals$hdr[1]
+                return(c(LowerInt,UpperInt))
+            }
+            """
+        if Mod == 3:
+            r_fct_string = """ 
+            M_MFPT <- function(matrix){
+                library("stats")
+                library("hdrcde")
+                library(stringi)
+                Intervals<-hdr(matrix,prob=0.8)
                 UpperInt<-Intervals$hdr[2]
                 LowerInt<-Intervals$hdr[1]
                 return(c(LowerInt,UpperInt))

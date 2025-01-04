@@ -40,7 +40,7 @@ system_instance = SystemAll()
 discretization_instance = Discretization()
 conditional_tables_instance = ConditionalTables()
 # resultsPath = 'C:\\Users\\Mohsen\\Documents\\PythonProjects\\Opac\\OutputResultsValidation\\'
-resultsPath = 'C:\\Users\\Mohsen\\Documents\\PythonProjects\\Opac\\OutputResults29June2023V06disc5SimVal\\'
+resultsPath = 'C:\\Users\\Mohsen\\Documents\\PythonProjects\\Opac\\OutputResults29June2023V75disc8SimVal\\'
 
 for Subnet in range(1, 5, 1):
     '''
