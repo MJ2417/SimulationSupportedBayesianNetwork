@@ -92,7 +92,7 @@ Comprehensive documentation is available in the `Docs/` directory, including:
 
 ## Acknowledgments
 
-We acknowledge the use of open-source libraries and tools that have facilitated this project. Special thanks to the contributors of the `bnlearn` package for Bayesian network modeling in Python .
+We acknowledge the use of open-source libraries and tools that have facilitated this project. Special thanks to Joost Berkhout (https://research.vu.nl/en/persons/joost-berkhout) for providing a couple of MC related functions and also KDA algorithm.
 
 ---
 
